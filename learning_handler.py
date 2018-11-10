@@ -12,7 +12,7 @@ import time
 def main():
     device_type = "cuda" if torch.cuda.is_available() else "cpu"
     device = torch.device(device_type)
-    print("Device type: %s"%device_type)
+    print("Device type: ", device_type)
 
     config, learning_rate, batch_size, num_epochs, loss_f, optimizer, seed = load_config()
     train_loader, val_loader = get_data_loader()
@@ -50,7 +50,7 @@ def main():
 
         train_err[epoch] = float(total_train_err) / len(train_loader.dataset)
         train_loss[epoch] = float(total_train_loss) / len(train_loader.dataset)
-        val_err[epoch], val_loss[epoch] = evaluate(net, val_loader, loss_f)
+        val_err[epoch], val_loss[epoch] = evaluate(net, val_loader, loss_f, device)
 
         print("Epoch {}: Train err: {}, Train loss: {} | Validation err: {}, Validation loss: {}"
               .format(epoch + 1, train_err[epoch], train_loss[epoch], val_err[epoch], val_loss[epoch]))

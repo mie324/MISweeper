@@ -1,10 +1,7 @@
 import torch as torch
 
 
-def evaluate(net, loader, loss_f):
-
-    device_type = "cuda" if torch.cuda.is_available() else "cpu"
-    device = torch.device(device_type)
+def evaluate(net, loader, loss_f, device):
 
     total_loss = 0.0
     total_err = 0.0
