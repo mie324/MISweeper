@@ -1,23 +1,33 @@
-import torch
 
+class EvaluationHandler:
 
-def evaluate(net, loader, loss_f, device):
+    def __init__(self, loader, err_f, loss_f, device):
+        self.loader = loader
+        self.loss_f = loss_f
+        self.err_f = err_f
+        self.device = device
 
-    total_loss = 0.0
-    total_err = 0.0
+        self.train_acc, self.train_loss, self.val_acc, self.val_loss = [], [], [], []
 
-    for i, data in enumerate(loader, 0):
-        inputs, labels = data
+    def store_train_data(self, t_err, t_loss, iterations):
 
-        inputs = inputs.to(device)
-        labels = labels.to(device)
-        outputs = net(inputs).to(device)
+        self.train_acc.append(1 - (float(t_err) / iterations))
+        self.train_loss.append((float(t_loss) / iterations))
 
-        loss = loss_f(outputs, labels.float().to(device))
-        total_err += torch.sum(labels != outputs.argmax(dim=1)).item()
-        total_loss += loss.item()
+    def evaluate(self, net):
 
-    err = float(total_err) / len(loader.dataset)
-    loss = float(total_loss) / len(loader.dataset)
+        total_loss = 0.0
+        total_err = 0.0
 
-    return err, loss
+        for i, data in enumerate(self.loader, 0):
+            inputs, labels = data
+
+            inputs = inputs.to(self.device)
+            labels = labels.to(self.device)
+            outputs = net(inputs).to(self.device)
+
+            total_err += self.err_f(outputs, labels.to(self.device)).item()
+            total_loss += self.loss_f(outputs, labels.to(self.device)).item()
+
+        self.val_acc.append(1 - (float(total_err) / len(self.loader.dataset)))
+        self.val_loss.append(float(total_loss) / len(self.loader.dataset))

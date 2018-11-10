@@ -1,5 +1,5 @@
 import json
-
+import torch
 import torch.optim as optim
 import torch.nn as nn
 
@@ -17,9 +17,10 @@ def load_config():
     seed = config["seed"]
 
     loss = parse_loss(config["loss"])
+    err = parse_err(config["err"])  # might want to change if data is one-hot
     optimizer = parse_optimizer(config["optimizer"], learning_rate)
 
-    return config, learning_rate, batch_size, num_epochs, loss, optimizer, seed
+    return config, learning_rate, batch_size, num_epochs, loss, err, optimizer, seed
 
 
 def parse_optimizer(optimizer_config, learning_rate):
@@ -36,3 +37,13 @@ def parse_loss(loss_config):
         loss = nn.MSELoss
 
     return loss(**loss_config["kwargs"])
+
+
+def parse_err(err_name):
+    err = None
+    if err_name == "argmax":
+        err = lambda labels, outputs: torch.sum(labels.argmax(dim=1) != outputs.argmax(dim=1))
+    elif err_name == "nargmax":
+        err = lambda labels, outputs: torch.sum(labels != outputs.argmax(dim=1))
+
+    return err
