@@ -4,10 +4,9 @@ import json
 
 # TODO implement parsing config for data preparation
 
-def load_config(path):
+def load_config():
 
-    with open(path) as file:
-        config = json.load(file)
+    config = json.load("config.json")
 
     batch_size = config["batch_size"]
     learning_rate = config["learning_rate"]
