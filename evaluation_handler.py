@@ -1,4 +1,4 @@
-import torch as torch
+import torch
 
 
 def evaluate(net, loader, loss_f, device):

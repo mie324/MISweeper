@@ -3,8 +3,11 @@ import torch.nn as nn
 
 class Net(nn.Module):
 
-    def __init__(self):
+    def __init__(self, layers):
         super(Net, self).__init__()
+        self.layers = layers
 
     def forward(self, x):
-        pass
+        for layer in self.layers:
+            x = layer(x)
+        return x

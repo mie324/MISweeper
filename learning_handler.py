@@ -1,11 +1,11 @@
 
-from Model.model import Net
+from Model.model_parser import load_net
 from Config.config_parser import load_config
 from Data.data_loader import get_data_loader
 from evaluation_handler import evaluate
 
 import numpy as np
-import torch as torch
+import torch
 import time
 
 
@@ -16,7 +16,7 @@ def main():
 
     config, learning_rate, batch_size, num_epochs, loss_f, optimizer, seed = load_config()
     train_loader, val_loader = get_data_loader()
-    net = Net().to(device)
+    net = load_net().to(device)
 
     torch.manual_seed(seed)
 
