@@ -4,9 +4,9 @@
   "num_epochs": 300,
   "eval_every": 1,
   "loss": {
-    "name": "mse",
+    "name": "nll",
+    "weight": "Config/rel_weights.npy",
     "kwargs": {
-      "reduction": "elementwise_mean"
     }
   },
   "optimizer": {

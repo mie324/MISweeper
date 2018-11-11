@@ -2,8 +2,7 @@ import json
 import torch
 import torch.optim as optim
 import torch.nn as nn
-
-# TODO implement parsing config for data preparation
+import numpy as np
 
 
 def get_note():
@@ -42,6 +41,9 @@ def parse_loss(loss_config):
     loss = None
     if loss_config["name"] == "mse":
         loss = nn.MSELoss
+    elif loss_config["name"] == "nll":
+        return nn.NLLLoss(weight=torch.Tensor(np.load(loss_config["weight"])), **loss_config["kwargs"])
+        nn.NLLLoss()
 
     return loss(**loss_config["kwargs"])
 
