@@ -18,19 +18,19 @@ def main():
 
     device = get_device()
 
-    learning_rate, batch_size, num_epochs, eval_every, loss_f, err_f, optimizer, seed = load_config()
+    learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed = load_config()
     train_loader, val_loader = get_data_loader()
     net = load_net().to(device)
 
     torch.manual_seed(seed)
 
-    eval_handler = EvaluationHandler(val_loader, err_f, loss_f, device)
+    eval_handler = EvaluationHandler(val_loader, acc_f, loss_f, device)
 
     start_time = time.time()
     for epoch in range(num_epochs):
 
         t_loss = 0.0
-        t_err = 0.0
+        t_acc = 0.0
 
         for i, data in enumerate(train_loader, 0):
 
@@ -47,10 +47,10 @@ def main():
             loss.backward()
             optimizer.step()
 
-            t_err += err_f(outputs, labels.to(device)).item()
+            t_acc += acc_f(outputs, labels.to(device)).item()
             t_loss += loss.item()
 
-        eval_handler.store_train_data(t_err, t_loss, len(train_loader.dataset))
+        eval_handler.store_train_data(t_acc, t_loss, len(train_loader.dataset))
 
         if epoch % eval_every:
             eval_handler.evaluate(net)

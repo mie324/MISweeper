@@ -15,7 +15,7 @@
       "weight_decay": 0.01
     }
   },
-  "err": "argmax",
+  "acc": "argmax",
   "seed": 69,
   "note": "model0"
 }

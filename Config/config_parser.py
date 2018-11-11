@@ -25,10 +25,10 @@ def load_config():
     eval_every = config["eval_every"]
 
     loss = parse_loss(config["loss"])
-    err = parse_err(config["err"])
+    acc = parse_acc(config["acc"])
     optimizer = parse_optimizer(config["optimizer"], learning_rate)
 
-    return learning_rate, batch_size, num_epochs, eval_every, loss, err, optimizer, seed
+    return learning_rate, batch_size, num_epochs, eval_every, loss, acc, optimizer, seed
 
 
 def parse_optimizer(optimizer_config, learning_rate):
@@ -47,11 +47,11 @@ def parse_loss(loss_config):
     return loss(**loss_config["kwargs"])
 
 
-def parse_err(err_name):
-    err = None
-    if err_name == "argmax":
-        err = lambda labels, outputs: torch.sum(labels.argmax(dim=1) != outputs.argmax(dim=1))
-    elif err_name == "nargmax":
-        err = lambda labels, outputs: torch.sum(labels != outputs.argmax(dim=1))
+def parse_acc(acc_name):
+    acc = None
+    if acc_name == "argmax":
+        acc = lambda labels, outputs: torch.sum(labels.argmax(dim=1) == outputs.argmax(dim=1))
+    elif acc_name == "nargmax":
+        acc = lambda labels, outputs: torch.sum(labels == outputs.argmax(dim=1))
 
-    return err
+    return acc
