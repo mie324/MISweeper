@@ -9,15 +9,15 @@ from Config.config_parser import get_note
 class ResultsHandler:
 
     def __init__(self):
-        device_name = os.uname()[1]
+        self.device_name = "Results/"+os.uname()[1]
 
-        if not os.path.isdir(device_name):
-            os.mkdir(device_name)
+        if not os.path.isdir(self.device_name):
+            os.mkdir(self.device_name)
 
-        if not os.path.isfile(device_name+"/"+"best.txt"):
+        if not os.path.isfile(self.device_name+"/"+"best.txt"):
             self.save_best_accuracy("0")
 
-        self.dst_path = device_name + "/" + get_note()
+        self.dst_path = self.device_name + "/" + get_note()
 
     def create_dst_dir(self):
         i = 0
@@ -46,9 +46,9 @@ class ResultsHandler:
         df.to_csv(self.dst_path+"/"+"validation.csv", index=False, sep="\t")
 
     def save_best_accuracy(self, best_accuracy):
-        with open("best.txt", 'w+') as f:
+        with open(self.device_name+"/best.txt", 'w+') as f:
             f.write(best_accuracy)
 
     def get_best_accuracy(self):
-        with open("best.txt", 'r') as f:
+        with open(self.device_name+"/best.txt", 'r') as f:
             return float(f.read())

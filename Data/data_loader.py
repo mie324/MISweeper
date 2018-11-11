@@ -1,2 +1,2 @@
 def get_data_loader():
-    pass
+    return None, None
