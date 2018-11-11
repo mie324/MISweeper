@@ -6,6 +6,13 @@ import torch.nn as nn
 # TODO implement parsing config for data preparation
 
 
+def get_note():
+    with open("config.json", "r") as fh:
+        config = json.load(fh)
+
+    return config["note"]
+
+
 def load_config():
 
     with open("config.json", "r") as fh:

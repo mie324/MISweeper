@@ -1,4 +1,7 @@
 
+from Results.results_handler import ResultsHandler
+
+
 class EvaluationHandler:
 
     def __init__(self, loader, err_f, loss_f, device):
@@ -6,7 +9,7 @@ class EvaluationHandler:
         self.loss_f = loss_f
         self.err_f = err_f
         self.device = device
-
+        self.results_handler = ResultsHandler
         self.train_acc, self.train_loss, self.val_acc, self.val_loss = [], [], [], []
 
     def store_train_data(self, t_err, t_loss, iterations):
@@ -37,3 +40,14 @@ class EvaluationHandler:
 
         print("Val. Acc.: {}, Val. Loss: {}"
               .format(self.val_acc[-1], self.val_loss[-1]))
+
+        self.check_for_saving()
+
+    def check_for_saving(self):
+
+        # TODO implement how to determine if needs saving
+        needs_saving = True
+
+        if needs_saving:
+            pass
+            # TODO implement saving

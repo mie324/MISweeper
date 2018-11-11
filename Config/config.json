@@ -16,5 +16,6 @@
     }
   },
   "err": "argmax",
-  "seed": 69
+  "seed": 69,
+  "note": "model0"
 }
