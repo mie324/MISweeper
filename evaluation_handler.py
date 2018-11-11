@@ -30,18 +30,19 @@ class EvaluationHandler:
 
             inputs = inputs.to(self.device)
             labels = labels.to(self.device)
-            outputs = net(inputs).to(self.device)
 
-            acc += self.acc_f(outputs, labels.to(self.device)).item()
-            loss += self.loss_f(outputs, labels.to(self.device)).item()
+            outputs = net(inputs.float()).to(self.device)
+
+            acc += self.acc_f(outputs.long(), labels.to(self.device)).item()
+            loss += self.loss_f(outputs, labels.float().to(self.device)).item()
 
         self.val_acc.append((float(acc) / len(self.loader.dataset)))
         self.val_loss.append(float(loss) / len(self.loader.dataset))
 
-        print("Val. Acc.: {}, Val. Loss: {}"
+        print("\t\t\tVal. Acc.: {}, Val. Loss: {}"
               .format(self.val_acc[-1], self.val_loss[-1]))
 
-        self.check_for_saving(net)
+        # self.check_for_saving(net)
 
     def check_for_saving(self, net):
         if self.val_acc[-1] > self.results_handler.get_best_accuracy():

@@ -1,6 +1,18 @@
 {
   "lin_1": {
-    "in_features": 5,
-    "out_features": 1
+    "in_features": 18,
+    "out_features": 100
+  },
+  "lin_2": {
+    "in_features": 100,
+    "out_features": 500
+  },
+  "lin_4": {
+    "in_features": 500,
+    "out_features": 50
+  },
+  "lin_3": {
+    "in_features": 50,
+    "out_features": 15
   }
 }

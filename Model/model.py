@@ -12,4 +12,4 @@ class Net(nn.Module):
     def forward(self, x):
         for layer in self.layers:
             x = layer(x)
-        return x
+        return x.squeeze()

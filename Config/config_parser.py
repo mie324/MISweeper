@@ -49,8 +49,8 @@ def parse_loss(loss_config):
 def parse_acc(acc_name):
     acc = None
     if acc_name == "argmax":
-        acc = lambda labels, outputs: torch.sum(labels.argmax(dim=1) == outputs.argmax(dim=1))
+        acc = lambda labels, outputs: torch.sum(labels.argmax(dim=0) == outputs.argmax(dim=0))
     elif acc_name == "nargmax":
-        acc = lambda labels, outputs: torch.sum(labels == outputs.argmax(dim=1))
+        acc = lambda labels, outputs: torch.sum(labels == outputs.argmax(dim=0))
 
     return acc

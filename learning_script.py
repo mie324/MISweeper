@@ -32,7 +32,7 @@ def main():
         t_loss = 0.0
         t_acc = 0.0
 
-        for i, data in enumerate(train_loader, 0):
+        for data in train_loader:
 
             inputs, labels = data
 
@@ -42,17 +42,17 @@ def main():
             optimizer.zero_grad()
 
             outputs = net(inputs.float()).to(device)
-            loss = loss_f(outputs, labels.to(device))
+            loss = loss_f(outputs, labels.float().to(device))
 
             loss.backward()
             optimizer.step()
 
-            t_acc += acc_f(outputs, labels.to(device)).item()
+            t_acc += acc_f(outputs.long(), labels).item()
             t_loss += loss.item()
 
         eval_handler.store_train_data(t_acc, t_loss, len(train_loader.dataset))
 
-        if epoch % eval_every:
+        if epoch % eval_every == 0:
             eval_handler.evaluate(net)
 
     print('Finished Training')

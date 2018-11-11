@@ -6,8 +6,8 @@ import torch.utils.data as data
 class LSSTDataset(data.Dataset):
 
     def __init__(self, X, y):
-        self.X = [X]
-        self.y = [y]
+        self.X = X
+        self.y = y
 
     def __len__(self):
         return len(self.X)
