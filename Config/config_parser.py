@@ -8,9 +8,7 @@ import torch.nn as nn
 
 def get_note():
     with open("config.json", "r") as fh:
-        config = json.load(fh)
-
-    return config["note"]
+        return json.load(fh)["note"]
 
 
 def load_config():
