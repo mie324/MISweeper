@@ -7,13 +7,13 @@ import torch.nn as nn
 
 
 def get_note():
-    with open("config.json", "r") as fh:
+    with open("Config/config.json", "r") as fh:
         return json.load(fh)["note"]
 
 
-def load_config():
+def load_config(net_params):
 
-    with open("config.json", "r") as fh:
+    with open("Config/config.json", "r") as fh:
         config = json.load(fh)
 
     batch_size = config["batch_size"]
@@ -24,17 +24,17 @@ def load_config():
 
     loss = parse_loss(config["loss"])
     acc = parse_acc(config["acc"])
-    optimizer = parse_optimizer(config["optimizer"], learning_rate)
+    optimizer = parse_optimizer(config["optimizer"], learning_rate, net_params)
 
     return learning_rate, batch_size, num_epochs, eval_every, loss, acc, optimizer, seed
 
 
-def parse_optimizer(optimizer_config, learning_rate):
+def parse_optimizer(optimizer_config, learning_rate, net_params):
     optimizer = None
     if optimizer_config["name"] == "adam":
         optimizer = optim.Adam
 
-    return optimizer(lr=learning_rate, **optimizer_config["kwargs"])
+    return optimizer(params=net_params, lr=learning_rate, **optimizer_config["kwargs"])
 
 
 def parse_loss(loss_config):
