@@ -1,5 +1,5 @@
 {
-  "batch_size": 1024,
+  "batch_size": 10,
   "learning_rate": 0.001,
   "num_epochs": 300,
   "eval_every": 1,

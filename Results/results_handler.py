@@ -27,14 +27,18 @@ class ResultsHandler:
             try:
                 os.mkdir(self.dst_path + "_%d" % i)
                 directory_created = True
+                self.dst_path = self.dst_path + "_%d" % i
             except FileExistsError:
                 i += 1
 
         return self.dst_path + "_%d" % i
 
     def save_model(self, net, t_acc, t_loss, val_acc, val_loss):
-        copy2("../Config/config.json", self.dst_path+"/"+"config.json")
-        copy2("../Model/model.json", self.dst_path+"/"+"model.json")
+        if not os.path.isdir(self.dst_path):
+            self.create_dst_dir()
+
+        copy2("Config/config.json", self.dst_path+"/"+"config.json")
+        copy2("Model/model.json", self.dst_path+"/"+"model.json")
         torch.save(net.state_dict(), self.dst_path+"/"+"model.pt")
 
         df = pd.DataFrame({"epoch": list(range(len(t_acc))), "train_acc": t_acc, "train_loss": t_loss})

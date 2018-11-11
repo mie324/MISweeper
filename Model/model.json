@@ -13,6 +13,6 @@
   },
   "lin_3": {
     "in_features": 50,
-    "out_features": 15
+    "out_features": 14
   }
 }

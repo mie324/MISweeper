@@ -3,6 +3,7 @@ from Data.dataset import LSSTDataset
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import label_binarize
+
 import numpy as np
 
 
@@ -23,7 +24,7 @@ def split_data(split, s):
 
     instances = np.load("Data/TrainData/stats_data.npy")
     labels = np.load("Data/TrainData/stats_labels.npy").transpose()
-    labels = label_binarize(labels, classes=range(0, 15))
+    labels = label_binarize(labels, classes=[6, 15, 16, 42, 52, 53, 62, 64, 65, 67, 88, 90, 92, 95])
 
     train_data, val_data, train_labels, val_labels = train_test_split(instances, labels,
                                                                       test_size=split, random_state=s)

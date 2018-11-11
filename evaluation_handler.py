@@ -42,9 +42,9 @@ class EvaluationHandler:
         print("\t\t\tVal. Acc.: {}, Val. Loss: {}"
               .format(self.val_acc[-1], self.val_loss[-1]))
 
-        # self.check_for_saving(net)
+        self.check_for_saving(net)
 
     def check_for_saving(self, net):
         if self.val_acc[-1] > self.results_handler.get_best_accuracy():
             self.results_handler.save_model(net, self.train_acc, self.train_loss, self.val_acc, self.val_loss)
-            self.results_handler.save_best_accuracy(""+self.val_acc[-1])
+            self.results_handler.save_best_accuracy(str(self.val_acc[-1]))
