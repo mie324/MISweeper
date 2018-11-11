@@ -17,5 +17,6 @@
   },
   "acc": "argmax",
   "seed": 69,
+  "split": 0.1,
   "note": "model0"
 }

@@ -20,13 +20,14 @@ def load_config(net_params):
     learning_rate = config["learning_rate"]
     num_epochs = config["num_epochs"]
     seed = config["seed"]
+    split = config["split"]
     eval_every = config["eval_every"]
 
     loss = parse_loss(config["loss"])
     acc = parse_acc(config["acc"])
     optimizer = parse_optimizer(config["optimizer"], learning_rate, net_params)
 
-    return learning_rate, batch_size, num_epochs, eval_every, loss, acc, optimizer, seed
+    return learning_rate, batch_size, num_epochs, eval_every, loss, acc, optimizer, seed, split
 
 
 def parse_optimizer(optimizer_config, learning_rate, net_params):

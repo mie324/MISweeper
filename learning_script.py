@@ -19,8 +19,8 @@ def main():
     device = get_device()
 
     net = load_net().to(device)
-    learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed = load_config(net.parameters())
-    train_loader, val_loader = get_data_loader()
+    learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed, split = load_config(net.parameters())
+    train_loader, val_loader = get_data_loader(batch_size, split, seed)
 
     torch.manual_seed(seed)
 
