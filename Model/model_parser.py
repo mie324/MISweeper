@@ -2,7 +2,7 @@ import json
 import torch
 
 from Model.model import Net
-
+from Model.layers import *
 
 def load_net():
 
@@ -28,5 +28,19 @@ def parse_layer(layer_name, args):
         layer = torch.nn.Conv1d
     elif layer_name == "maxPool1d":
         layer = torch.nn.MaxPool1d
+    elif layer_name == "relu":
+        layer = torch.nn.ReLU
+    elif layer_name == "lrelu":
+        layer = torch.nn.LeakyReLU
+    elif layer_name == "elu":
+        layer = torch.nn.ELU
+    elif layer_name == "sig":
+        layer = torch.nn.Sigmoid
+    elif layer_name == "rnn":
+        layer = torch.nn.RNN
+    elif layer_name == "dropout":
+        layer = torch.nn.Dropout
+    elif layer_name == "view":
+        layer = ViewLayer
 
     return layer(**args)

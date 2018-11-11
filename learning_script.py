@@ -8,7 +8,8 @@ import time
 
 
 def get_device():
-    device_type = "cuda" if torch.cuda.is_available() else "cpu"
+    # device_type = "cuda" if torch.cuda.is_available() else "cpu"
+    device_type = "cpu"
     device = torch.device(device_type)
     print("Device type: ", device_type)
     return device
