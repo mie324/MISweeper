@@ -15,12 +15,13 @@ def load_config():
     learning_rate = config["learning_rate"]
     num_epochs = config["num_epochs"]
     seed = config["seed"]
+    eval_every = config["eval_every"]
 
     loss = parse_loss(config["loss"])
-    err = parse_err(config["err"])  # might want to change if data is one-hot
+    err = parse_err(config["err"])
     optimizer = parse_optimizer(config["optimizer"], learning_rate)
 
-    return config, learning_rate, batch_size, num_epochs, loss, err, optimizer, seed
+    return learning_rate, batch_size, num_epochs, eval_every, loss, err, optimizer, seed
 
 
 def parse_optimizer(optimizer_config, learning_rate):

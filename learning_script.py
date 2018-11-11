@@ -1,4 +1,3 @@
-
 from Model.model_parser import load_net
 from Config.config_parser import load_config
 from Data.data_loader import get_data_loader
@@ -19,7 +18,7 @@ def main():
 
     device = get_device()
 
-    config, learning_rate, batch_size, num_epochs, loss_f, err_f, optimizer, seed = load_config()
+    learning_rate, batch_size, num_epochs, eval_every, loss_f, err_f, optimizer, seed = load_config()
     train_loader, val_loader = get_data_loader()
     net = load_net().to(device)
 
@@ -29,6 +28,7 @@ def main():
 
     start_time = time.time()
     for epoch in range(num_epochs):
+
         t_loss = 0.0
         t_err = 0.0
 
@@ -49,8 +49,11 @@ def main():
 
             t_err += err_f(outputs, labels.to(device)).item()
             t_loss += loss.item()
+
         eval_handler.store_train_data(t_err, t_loss, len(train_loader.dataset))
-        eval_handler.evaluate(net)
+
+        if epoch % eval_every:
+            eval_handler.evaluate(net)
 
     print('Finished Training')
     end_time = time.time()
