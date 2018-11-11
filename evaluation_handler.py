@@ -9,7 +9,7 @@ class EvaluationHandler:
         self.loss_f = loss_f
         self.acc_f = acc_f
         self.device = device
-        self.results_handler = ResultsHandler
+        self.results_handler = ResultsHandler()
         self.train_acc, self.train_loss, self.val_acc, self.val_loss = [], [], [], []
 
     def store_train_data(self, t_acc, t_loss, iterations):
@@ -41,13 +41,9 @@ class EvaluationHandler:
         print("Val. Acc.: {}, Val. Loss: {}"
               .format(self.val_acc[-1], self.val_loss[-1]))
 
-        self.check_for_saving()
+        self.check_for_saving(net)
 
-    def check_for_saving(self):
-
-        # TODO implement how to determine if needs saving
-        needs_saving = True
-
-        if needs_saving:
-            pass
-            # TODO implement saving
+    def check_for_saving(self, net):
+        if self.val_acc[-1] > self.results_handler.get_best_accuracy():
+            self.results_handler.save_model(net, self.train_acc, self.train_loss, self.val_acc, self.val_loss)
+            self.results_handler.save_best_accuracy(""+self.val_acc[-1])

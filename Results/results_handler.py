@@ -14,6 +14,9 @@ class ResultsHandler:
         if not os.path.isdir(device_name):
             os.mkdir(device_name)
 
+        if not os.path.isfile(device_name+"/"+"best.txt"):
+            self.save_best_accuracy("0")
+
         self.dst_path = device_name + "/" + get_note()
 
     def create_dst_dir(self):
@@ -41,3 +44,11 @@ class ResultsHandler:
 
         df = pd.DataFrame({"epoch": [i*r for i in range(len(val_acc))], "val_acc": val_acc, "val_loss": val_loss})
         df.to_csv(self.dst_path+"/"+"validation.csv", index=False, sep="\t")
+
+    def save_best_accuracy(self, best_accuracy):
+        with open("best.txt", 'w+') as f:
+            f.write(best_accuracy)
+
+    def get_best_accuracy(self):
+        with open("best.txt", 'r') as f:
+            return float(f.read())
