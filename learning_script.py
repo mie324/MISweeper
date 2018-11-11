@@ -56,9 +56,7 @@ def main():
             eval_handler.evaluate(net)
 
     print('Finished Training')
-    end_time = time.time()
-    elapsed_time = end_time - start_time
-    print("Total time elapsed: {:.2f} seconds".format(elapsed_time))
+    print("Total time elapsed: {:.2f} seconds".format(time.time() - start_time))
 
 
 if __name__ == '__main__':
