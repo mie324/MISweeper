@@ -15,7 +15,8 @@
       "weight_decay": 0.01
     }
   },
-  "acc": "nargmax",
+  "data_name": "simple",
+  "one_hot": 0,
   "seed": 69,
   "split": 0.1,
   "note": "model0"

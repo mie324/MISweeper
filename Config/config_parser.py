@@ -5,28 +5,35 @@ import torch.nn as nn
 import numpy as np
 
 
-def get_note():
+def load_config_file():
     with open("Config/config.json", "r") as fh:
-        return json.load(fh)["note"]
+        return json.load(fh)
+
+
+def get_note():
+    return load_config_file()["note"]
 
 
 def load_config(net_params):
 
-    with open("Config/config.json", "r") as fh:
-        config = json.load(fh)
+    config = load_config_file()
 
     batch_size = config["batch_size"]
     learning_rate = config["learning_rate"]
     num_epochs = config["num_epochs"]
     seed = config["seed"]
-    split = config["split"]
     eval_every = config["eval_every"]
 
     loss = parse_loss(config["loss"])
-    acc = parse_acc(config["acc"])
+    acc = parse_acc(config["one_hot"])
     optimizer = parse_optimizer(config["optimizer"], learning_rate, net_params)
 
-    return learning_rate, batch_size, num_epochs, eval_every, loss, acc, optimizer, seed, split
+    return learning_rate, batch_size, num_epochs, eval_every, loss, acc, optimizer, seed
+
+
+def get_data_config():
+    config = load_config_file()
+    return config["batch_size"], config["split"], config["seed"], config["data_name"], config["one_hot"]
 
 
 def parse_optimizer(optimizer_config, learning_rate, net_params):
@@ -48,6 +55,5 @@ def parse_loss(loss_config):
     return loss(**loss_config["kwargs"])
 
 
-def parse_acc(acc_name):
-    return lambda labels, outputs: torch.sum((labels if acc_name == "nargmax" else labels.argmax(dim=1))
-                                             .float() == outputs.argmax(dim=1).float()).item()
+def parse_acc(one_hot):
+    return lambda l, o: torch.sum((l.argmax(dim=1) if one_hot else l).float() == o.argmax(dim=1).float()).item()

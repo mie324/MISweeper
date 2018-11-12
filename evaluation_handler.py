@@ -14,8 +14,8 @@ class EvaluationHandler:
 
     def store_train_data(self, t_acc, t_loss, iterations):
 
-        self.train_acc.append((float(t_acc) / iterations))
-        self.train_loss.append((float(t_loss) / iterations))
+        self.train_acc.append(float(t_acc) / iterations)
+        self.train_loss.append(float(t_loss) / iterations)
 
         print("Epoch: {} | Train Acc.: {}, Train Loss: {}"
               .format(len(self.train_acc), self.train_acc[-1], self.train_loss[-1]))
@@ -25,7 +25,7 @@ class EvaluationHandler:
         loss = 0.0
         acc = 0.0
 
-        for i, data in enumerate(self.loader, 0):
+        for data in self.loader:
             inputs, labels = data
 
             inputs = inputs.float().to(self.device)
@@ -36,7 +36,7 @@ class EvaluationHandler:
             acc += self.acc_f(labels, outputs)
             loss += self.loss_f(outputs, labels.long().to(self.device)).item()
 
-        self.val_acc.append((float(acc) / len(self.loader.dataset)))
+        self.val_acc.append(float(acc) / len(self.loader.dataset))
         self.val_loss.append(float(loss) / len(self.loader.dataset))
 
         print("\t\t\tVal. Acc.: {}, Val. Loss: {}"

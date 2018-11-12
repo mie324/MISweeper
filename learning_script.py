@@ -1,5 +1,6 @@
 from Model.model_parser import load_net
 from Config.config_parser import load_config
+from Config.config_parser import get_data_config
 from Data.data_loader import get_data_loader
 from evaluation_handler import EvaluationHandler
 
@@ -20,8 +21,8 @@ def main():
     device = get_device()
 
     net = load_net().to(device)
-    learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed, split = load_config(net.parameters())
-    train_loader, val_loader = get_data_loader(batch_size, split, seed, simple=True)
+    learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed = load_config(net.parameters())
+    train_loader, val_loader = get_data_loader(*get_data_config())
 
     torch.manual_seed(seed)
 
