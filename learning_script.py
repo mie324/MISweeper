@@ -57,6 +57,8 @@ def main():
         if epoch % eval_every == 0:
             eval_handler.evaluate(net)
 
+        eval_handler.print_logs()
+
     print('Finished Training')
     print("Total time elapsed: {:.2f} seconds".format(time.time() - start_time))
 

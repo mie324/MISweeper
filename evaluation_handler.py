@@ -11,14 +11,13 @@ class EvaluationHandler:
         self.device = device
         self.results_handler = ResultsHandler()
         self.train_acc, self.train_loss, self.val_acc, self.val_loss = [], [], [], []
+        self.logs = ""
 
     def store_train_data(self, t_acc, t_loss, iterations):
 
         self.train_acc.append(float(t_acc) / iterations)
         self.train_loss.append(float(t_loss) / iterations)
-
-        print("Epoch: {} | Train Acc.: {}, Train Loss: {}"
-              .format(len(self.train_acc), self.train_acc[-1], self.train_loss[-1]))
+        self.logs += "Epoch: {} | Train Acc.: {}, Train Loss: {}".format(len(self.train_acc), self.train_acc[-1], self.train_loss[-1])
 
     def evaluate(self, net):
 
@@ -39,12 +38,14 @@ class EvaluationHandler:
         self.val_acc.append(float(acc) / len(self.loader.dataset))
         self.val_loss.append(float(loss) / len(self.loader.dataset))
 
-        print("\t\t\tVal. Acc.: {}, Val. Loss: {}"
-              .format(self.val_acc[-1], self.val_loss[-1]))
-
+        self.logs += (" | Val. Acc.: {}, Val. Loss: {}".format(self.val_acc[-1], self.val_loss[-1]))
         self.check_for_saving(net)
 
     def check_for_saving(self, net):
         if self.val_acc[-1] > self.results_handler.get_best_accuracy():
             self.results_handler.save_model(net, self.train_acc, self.train_loss, self.val_acc, self.val_loss)
             self.results_handler.save_best_accuracy(str(self.val_acc[-1]))
+
+    def print_logs(self):
+        print(self.logs)
+        self.logs = ""
