@@ -4,6 +4,7 @@ import torch
 from Model.model import Net
 from Model.layers import *
 
+
 def load_net():
 
     with open("Model/model.json", "r") as fh:

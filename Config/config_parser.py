@@ -43,16 +43,11 @@ def parse_loss(loss_config):
         loss = nn.MSELoss
     elif loss_config["name"] == "nll":
         return nn.NLLLoss(weight=torch.Tensor(np.load(loss_config["weight"])), **loss_config["kwargs"])
-        nn.NLLLoss()
-
+    elif loss_config["name"] == "ce":
+        return nn.CrossEntropyLoss(weight=torch.Tensor(np.load(loss_config["weight"])), **loss_config["kwargs"])
     return loss(**loss_config["kwargs"])
 
 
 def parse_acc(acc_name):
-    acc = None
-    if acc_name == "argmax":
-        acc = lambda labels, outputs: torch.sum(labels.argmax(dim=0) == outputs.argmax(dim=0))
-    elif acc_name == "nargmax":
-        acc = lambda labels, outputs: torch.sum(labels == outputs.argmax(dim=0))
-
-    return acc
+    return lambda labels, outputs: torch.sum((labels if acc_name == "nargmax" else labels.argmax(dim=1))
+                                             .float() == outputs.argmax(dim=1).float()).item()

@@ -28,13 +28,13 @@ class EvaluationHandler:
         for i, data in enumerate(self.loader, 0):
             inputs, labels = data
 
-            inputs = inputs.to(self.device)
-            labels = labels.to(self.device)
+            inputs = inputs.float().to(self.device)
+            labels = labels.float().to(self.device)
 
             outputs = net(inputs.float()).to(self.device)
 
-            acc += self.acc_f(outputs.long(), labels.to(self.device)).item()
-            loss += self.loss_f(outputs, labels.float().to(self.device)).item()
+            acc += self.acc_f(labels, outputs)
+            loss += self.loss_f(outputs, labels.long().to(self.device)).item()
 
         self.val_acc.append((float(acc) / len(self.loader.dataset)))
         self.val_loss.append(float(loss) / len(self.loader.dataset))

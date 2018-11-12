@@ -4,7 +4,7 @@
   "num_epochs": 300,
   "eval_every": 1,
   "loss": {
-    "name": "nll",
+    "name": "ce",
     "weight": "Config/rel_weights.npy",
     "kwargs": {
     }
@@ -15,7 +15,7 @@
       "weight_decay": 0.01
     }
   },
-  "acc": "argmax",
+  "acc": "nargmax",
   "seed": 69,
   "split": 0.1,
   "note": "model0"

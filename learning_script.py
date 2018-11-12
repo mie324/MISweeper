@@ -37,18 +37,18 @@ def main():
 
             inputs, labels = data
 
-            inputs = inputs.to(device)
-            labels = labels.to(device)
+            inputs = inputs.float().to(device)
+            labels = labels.float().to(device)
 
             optimizer.zero_grad()
 
-            outputs = net(inputs.float()).to(device)
-            loss = loss_f(outputs, labels.float().to(device))
+            outputs = net(inputs).float().to(device)
+            loss = loss_f(outputs, labels.long().to(device))
 
             loss.backward()
             optimizer.step()
 
-            t_acc += acc_f(outputs.long(), labels).item()
+            t_acc += acc_f(labels, outputs)
             t_loss += loss.item()
 
         eval_handler.store_train_data(t_acc, t_loss, len(train_loader.dataset))

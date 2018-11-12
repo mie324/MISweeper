@@ -1,26 +1,21 @@
 {
-  "lin_1": {
-    "in_features": 18,
-    "out_features": 100
-  },
-  "lin_2": {
-    "in_features": 100,
-    "out_features": 500
-  },
-  "lrelu_1":{
-    "negative_slope": 0.1
-  },
-  "lin_4": {
-    "in_features": 500,
-    "out_features": 50
-  },
-  "view_1": {},
-  "lrelu_2":{
-    "negative_slope": 0.1
-  },
-  "lin_3": {
-    "in_features": 50,
-    "out_features": 14
-  },
-  "view_2": {}
+    "lin_1": {
+      "in_features": 17,
+      "out_features": 100
+    },
+    "relu_1": {},
+    "lin_2": {
+      "in_features": 100,
+      "out_features": 500
+    },
+    "relu_2": {},
+    "lin_3": {
+      "in_features": 500,
+      "out_features": 50
+    },
+    "relu_3": {},
+    "lin_4": {
+      "in_features": 50,
+      "out_features": 14
+    }
 }

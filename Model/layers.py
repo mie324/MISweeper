@@ -8,8 +8,3 @@ class ViewLayer(nn.Module):
 
     def forward(self, x):
         return x.view(x.shape[0], -1)
-
-
-# class MultiStreamLayer(nn.Module):
-#
-#
