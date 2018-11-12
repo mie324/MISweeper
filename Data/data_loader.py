@@ -7,9 +7,9 @@ from sklearn.preprocessing import label_binarize
 import numpy as np
 import torch
 
-def get_data_loader(batch_size, split, seed):
+def get_data_loader(batch_size, split, seed, simple=True):
 
-    train_data, val_data, train_labels, val_labels = split_data(split, seed)
+    train_data, val_data, train_labels, val_labels = split_data(split, seed, simple)
 
     train_dataset = LSSTDataset(train_data, train_labels)
     val_dataset = LSSTDataset(val_data, val_labels)
@@ -20,10 +20,16 @@ def get_data_loader(batch_size, split, seed):
     return train_loader, val_loader
 
 
-def split_data(split, s):
+def split_data(split, s, simple):
 
-    instances = np.load("Data/TrainData/stats_data.npy")
-    labels = np.load("Data/TrainData/stats_labels.npy").transpose()
+    if simple:
+        instances = np.load("Data/TrainData/stats_data.npy")
+        labels = np.load("Data/TrainData/stats_labels.npy").transpose()
+    else:
+        loaded = np.load('Data/TrainData/train_data.npz')
+        labels = loaded['labels'].transpose()
+        instances = loaded['data']
+
     # labels = label_binarize(labels, classes=[6, 15, 16, 42, 52, 53, 62, 64, 65, 67, 88, 90, 92, 95])
     labels = indecise(labels)
     train_data, val_data, train_labels, val_labels = train_test_split(instances, labels,
