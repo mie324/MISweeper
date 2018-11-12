@@ -71,8 +71,8 @@ for idx, (groupname, df) in enumerate(train_norm):
     # Record the label, in case the data has been unordered
     labels_norm.append(labels[groupname])
 
-    obj_data = np.empty(dims[1:])
-    obj_data.fill(np.nan)
+    obj_data = np.zeros(dims[1:])
+    # obj_data.fill(np.nan)
     passbands = df.groupby('passband')
 
     for i in range(6):
