@@ -59,9 +59,10 @@ def normalize_df(df):
     return df
 
 
-# Create the 3-dimensional data array
+# Create the 3-dimensional data array, initially empty (with np.nan)
 dims = (train_stats.shape[0], 12, train_stats['size'].max())
-data = np.zeros(dims)
+data = np.empty(dims)
+# data.fill(np.nan)
 train_norm = train.apply(normalize_df).groupby('object_id')
 
 labels_norm = []
@@ -70,7 +71,8 @@ for idx, (groupname, df) in enumerate(train_norm):
     # Record the label, in case the data has been unordered
     labels_norm.append(labels[groupname])
 
-    obj_data = np.zeros(dims[1:])
+    obj_data = np.empty(dims[1:])
+    obj_data.fill(np.nan)
     passbands = df.groupby('passband')
 
     for i in range(6):
@@ -81,7 +83,12 @@ for idx, (groupname, df) in enumerate(train_norm):
 
             # Because each passband goes through a separate RNN, we zero mjd for each passband
             # instead of just doing for the whole object
-            mjd_flux.loc['mjd'] -= mjd_flux.loc['mjd'].min()
+            # mjd_flux.loc['mjd'] -= mjd_flux.loc['mjd'].min()
+
+            # Instead of using time series directly, we're going to use time step
+            mjd_flux.loc['mjd'] = mjd_flux.loc['mjd'].diff()
+            # Finally, set the first element to zero instead of nan
+            mjd_flux.loc['mjd'].iloc[0] = 0
 
             # Insert the flux into the object array
             obj_data[2*i:(2*i+2), :mjd_flux.shape[1]] = mjd_flux
