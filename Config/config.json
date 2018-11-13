@@ -1,6 +1,6 @@
 {
-  "batch_size": 10,
-  "learning_rate": 0.001,
+  "batch_size": 512,
+  "learning_rate": 0.01,
   "num_epochs": 300,
   "eval_every": 1,
   "loss": {
@@ -15,7 +15,7 @@
       "weight_decay": 0.01
     }
   },
-  "data_name": "simple",
+  "data_name": "regular",
   "one_hot": 0,
   "seed": 69,
   "split": 0.2,

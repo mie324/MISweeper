@@ -1,21 +1,18 @@
 {
-    "lin_1": {
-      "in_features": 17,
-      "out_features": 100
-    },
-    "relu_1": {},
-    "lin_2": {
-      "in_features": 100,
-      "out_features": 500
-    },
-    "relu_2": {},
-    "lin_3": {
-      "in_features": 500,
-      "out_features": 50
-    },
-    "relu_3": {},
-    "lin_4": {
-      "in_features": 50,
-      "out_features": 14
-    }
+  "multi": {
+    "layer_name": "rnn",
+    "layer_args": {
+        "input_size": 2,
+        "hidden_size": 14,
+        "batch_first": true
+      },
+    "num_streams": 6
+  },
+  "view": {},
+  "lin_1": {
+    "in_features": 84,
+    "out_features": 14
+  },
+  "relu_1": {
+  }
 }

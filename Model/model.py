@@ -8,16 +8,6 @@ class Net(nn.Module):
         for i in range(len(layers)):
             setattr(self, layer_names[i], layers[i])
         self.layers = layers
-    #     self.combinig_layers = _
-    #
-    # def forward(self, *x):
-    #     output = x
-    #     for i,a in enumerate(x):
-    #         for layer in self.layers:
-    #             output[i] = self.layers[i](a)
-    #
-    #     output = torch.concat(output, -1)
-    #     for
 
     def forward(self, x):
         for layer in self.layers:

@@ -43,5 +43,16 @@ def parse_layer(layer_name, args):
         layer = torch.nn.Dropout
     elif layer_name == "view":
         layer = ViewLayer
+    elif layer_name == "multi":
+        return parse_multi_stream(args)
 
     return layer(**args)
+
+
+def parse_multi_stream(layer):
+
+    layer_name = layer["layer_name"]
+    layer_args = layer["layer_args"]
+    num_streams = layer["num_streams"]
+
+    return MultiStreamLayer(layer_name, parse_layer(layer_name, layer_args), num_streams)
