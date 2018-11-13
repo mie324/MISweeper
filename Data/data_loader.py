@@ -7,7 +7,7 @@ import numpy as np
 
 
 def load_data(data_name):
-    instances, labels = None, None
+    instances, labels, lengths = None, None, None
     if data_name == "simple":
         instances = np.load("Data/TrainData/stats_data.npy")
         labels = np.load("Data/TrainData/stats_labels.npy").transpose()
@@ -15,7 +15,8 @@ def load_data(data_name):
         loaded = np.load('Data/TrainData/train_data.npz')
         labels = loaded['labels'].transpose()
         instances = loaded['data']
-    return instances, labels
+        lengths = loaded['lengths']
+    return instances, labels, lengths
 
 
 def normalize(labels, one_hot):
@@ -31,9 +32,9 @@ def normalize(labels, one_hot):
 
 def get_data_loader(batch_size, spl, s, data_name, one_hot):
 
-    instances, labels = load_data(data_name)
+    instances, labels, lengths = load_data(data_name)
     labels = normalize(labels, one_hot)
-    train_data, val_data, train_labels, val_labels = train_test_split(instances, labels, test_size=spl, random_state=s)
+    train_data, val_data, train_labels, val_labels, train_lengths, val_lengths = train_test_split(instances, labels, lengths, test_size=spl, random_state=s)
 
     train_dataset = LSSTDataset(train_data, train_labels)
     val_dataset = LSSTDataset(val_data, val_labels)

@@ -65,6 +65,9 @@ data = np.empty(dims)
 # data.fill(np.nan)
 train_norm = train.apply(normalize_df).groupby('object_id')
 
+# lengths[obj][channel] stores the length of the obj's time series for channel channel
+lengths = np.zeros((dims[0], 6))
+
 labels_norm = []
 
 for idx, (groupname, df) in enumerate(train_norm):
@@ -92,6 +95,9 @@ for idx, (groupname, df) in enumerate(train_norm):
 
             # Insert the flux into the object array
             obj_data[2*i:(2*i+2), :mjd_flux.shape[1]] = mjd_flux
+
+            # Record the lengths
+            lengths[idx][i] = mjd_flux.shape[1]
     # Merge the obj_data array into the data array
     data[idx] = obj_data
 
@@ -100,4 +106,4 @@ np.save('TrainData/data.npy', data)
 np.save('TrainData/labels.npy', np.array(labels_norm))
 
 # Data is massive, so save a compressed version
-np.savez_compressed('TrainData/train_data.npz', data=data, labels=labels_norm)
+np.savez_compressed('TrainData/train_data.npz', data=data, lengths=lengths, labels=labels_norm)
