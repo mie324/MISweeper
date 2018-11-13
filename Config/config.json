@@ -1,7 +1,7 @@
 {
   "batch_size": 512,
-  "learning_rate": 0.01,
-  "num_epochs": 300,
+  "learning_rate": 0.001,
+  "num_epochs": 500,
   "eval_every": 1,
   "loss": {
     "name": "ce",
@@ -12,12 +12,12 @@
   "optimizer": {
     "name": "adam",
     "kwargs": {
-      "weight_decay": 0.01
+      "weight_decay": 0
     }
   },
   "data_name": "regular",
   "one_hot": 0,
-  "seed": 69,
-  "split": 0.2,
-  "note": "model0"
+  "seed": 511235,
+  "split": 0.1,
+  "note": "rnn_rel"
 }

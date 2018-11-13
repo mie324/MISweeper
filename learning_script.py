@@ -1,4 +1,5 @@
 from Model.model_parser import load_net
+from Model.model import Net
 from Config.config_parser import load_config
 from Config.config_parser import get_data_config
 from Data.data_loader import get_data_loader
@@ -20,7 +21,8 @@ def main():
 
     device = get_device()
 
-    net = load_net().to(device)
+    # net = load_net().to(device)
+    net = Net()
     learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed = load_config(net.parameters())
     train_loader, val_loader = get_data_loader(*get_data_config())
 
@@ -36,14 +38,15 @@ def main():
 
         for data in train_loader:
 
-            inputs, labels = data
+            inputs, labels, lengths = data
 
             inputs = inputs.float().to(device) if type(inputs) != list else [inp.float().to(device) for inp in inputs]
             labels = labels.float().to(device)
+            lengths = lengths.int()
 
             optimizer.zero_grad()
 
-            outputs = net(inputs).float().to(device)
+            outputs = net(inputs, lengths).float().to(device)
             loss = loss_f(outputs, labels.long().to(device))
 
             loss.backward()

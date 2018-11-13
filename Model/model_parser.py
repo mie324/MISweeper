@@ -1,7 +1,7 @@
 import json
 import torch
 
-from Model.model import Net
+from Model.model_abs import Net
 from Model.layers import *
 
 

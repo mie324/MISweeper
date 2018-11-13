@@ -24,13 +24,14 @@ class EvaluationHandler:
         acc = 0.0
 
         for data in self.loader:
-            inputs, labels = data
+            inputs, labels, lengths = data
 
             inputs = inputs.float().to(self.device) if type(inputs) != list \
                 else [inp.float().to(self.device) for inp in inputs]
             labels = labels.float().to(self.device)
+            lengths = lengths.int()
 
-            outputs = net(inputs).float().to(self.device)
+            outputs = net(inputs, lengths).float().to(self.device)
 
             acc += self.acc_f(labels, outputs)
             loss += self.loss_f(outputs, labels.long().to(self.device)).item()

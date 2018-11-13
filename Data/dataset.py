@@ -5,9 +5,10 @@ import torch.utils.data as data
 
 class LSSTDataset(data.Dataset):
 
-    def __init__(self, X, y):
+    def __init__(self, X, y, length):
         self.X = X
         self.y = y
+        self.length = length
 
     def __len__(self):
         return len(self.X)
@@ -17,6 +18,6 @@ class LSSTDataset(data.Dataset):
         for i in range(6):
             features.append(self.X[index, 2*i:(2*i+2)].T)
 
-        return tuple(features), self.y[index]
+        return tuple(features), self.y[index], self.length[index]
         # return self.X[index], self.y[index]
 

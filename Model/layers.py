@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch
-import numpy as np
+
 
 class ViewLayer(nn.Module):
 
@@ -26,6 +26,7 @@ class MultiStreamLayer(nn.Module):
         for i in range(len(self.layers)):
             lay = self.layers[i]
             inp = input[i]
+            # lengths =
             r, _ = lay(inp)
             r = r[:,-1,:]
             res.append(r.squeeze())

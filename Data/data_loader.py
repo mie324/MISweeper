@@ -16,6 +16,11 @@ def load_data(data_name):
         labels = loaded['labels'].transpose()
         instances = loaded['data']
         lengths = loaded['lengths']
+    elif data_name == "sorted":
+        loaded = np.load('Data/TrainData/train_data2.npz')
+        labels = loaded['labels'].transpose()
+        instances = loaded['data']
+        lengths = loaded['lengths']
     return instances, labels, lengths
 
 
@@ -36,8 +41,8 @@ def get_data_loader(batch_size, spl, s, data_name, one_hot):
     labels = normalize(labels, one_hot)
     train_data, val_data, train_labels, val_labels, train_lengths, val_lengths = train_test_split(instances, labels, lengths, test_size=spl, random_state=s)
 
-    train_dataset = LSSTDataset(train_data, train_labels)
-    val_dataset = LSSTDataset(val_data, val_labels)
+    train_dataset = LSSTDataset(train_data, train_labels, train_lengths)
+    val_dataset = LSSTDataset(val_data, val_labels, val_lengths)
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size)
