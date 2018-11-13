@@ -14,23 +14,23 @@ class EvaluationHandler:
         self.logs = ""
 
     def store_train_data(self, t_acc, t_loss, iterations):
-
         self.train_acc.append(float(t_acc) / iterations)
         self.train_loss.append(float(t_loss) / iterations)
-        self.logs += "Epoch: {} | Train Acc.: {}, Train Loss: {}".format(len(self.train_acc), self.train_acc[-1], self.train_loss[-1])
+        self.logs += "Epoch: {} | Train Acc.: {}, Train Loss: {}".format(len(self.train_acc),
+                                                                         self.train_acc[-1], self.train_loss[-1])
 
     def evaluate(self, net):
-
         loss = 0.0
         acc = 0.0
 
         for data in self.loader:
             inputs, labels = data
 
-            inputs = inputs.float().to(self.device)
+            inputs = inputs.float().to(self.device) if type(inputs) != list \
+                else [inp.float().to(self.device) for inp in inputs]
             labels = labels.float().to(self.device)
 
-            outputs = net(inputs.float()).to(self.device)
+            outputs = net(inputs).float().to(self.device)
 
             acc += self.acc_f(labels, outputs)
             loss += self.loss_f(outputs, labels.long().to(self.device)).item()

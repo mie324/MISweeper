@@ -38,7 +38,7 @@ def main():
 
             inputs, labels = data
 
-            inputs = inputs.float().to(device)
+            inputs = inputs.float().to(device) if type(inputs) != list else [inp.float().to(device) for inp in inputs]
             labels = labels.float().to(device)
 
             optimizer.zero_grad()
