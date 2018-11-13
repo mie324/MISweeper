@@ -9,15 +9,13 @@ class Net(nn.Module):
     def __init__(self, num_channels=6):
         super(Net, self).__init__()
 
-        # for i in range(num_channels):
+        layer = nn.RNN(input_size=2, hidden_size=26, batch_first=True)
+        self.num_channels = num_channels
 
-
-        self.rnn0 = nn.RNN(input_size=2, hidden_size=26, batch_first=True)
-        self.rnn1 = nn.RNN(input_size=2, hidden_size=26, batch_first=True)
-        self.rnn2 = nn.RNN(input_size=2, hidden_size=26, batch_first=True)
-        self.rnn3 = nn.RNN(input_size=2, hidden_size=26, batch_first=True)
-        self.rnn4 = nn.RNN(input_size=2, hidden_size=26, batch_first=True)
-        self.rnn5 = nn.RNN(input_size=2, hidden_size=26, batch_first=True)
+        self.layers = []
+        for i in range(num_channels):
+            setattr(self, "rnn"+str(i), layer)
+            self.layers.append(layer)
 
         self.lin1 = nn.Linear(in_features=156, out_features=300)
         self.lin2 = nn.Linear(in_features=300, out_features=50)
@@ -25,39 +23,22 @@ class Net(nn.Module):
 
         self.relu = nn.ReLU()
 
-    def forward(self, x, lengths):
+    def forward(self, inp, lengths):
 
-        x = torch.stack(x, dim=0)
+        inp = torch.stack(inp, dim=0)
 
-        x0, l0, i0 = self.sort(x[0], lengths[:, 0])
-        x1, l1, i1 = self.sort(x[1], lengths[:, 1])
-        x2, l2, i2 = self.sort(x[2], lengths[:, 2])
-        x3, l3, i3 = self.sort(x[3], lengths[:, 3])
-        x4, l4, i4 = self.sort(x[4], lengths[:, 4])
-        x5, l5, i5 = self.sort(x[5], lengths[:, 5])
+        x = [None]*self.num_channels
+        l = [None]*self.num_channels
+        ind = [None]*self.num_channels
+        r = [None]*self.num_channels
 
-        r0 = nn.utils.rnn.pack_padded_sequence(x0, l0, batch_first=True)
-        r1 = nn.utils.rnn.pack_padded_sequence(x1, l1, batch_first=True)
-        r2 = nn.utils.rnn.pack_padded_sequence(x2, l2, batch_first=True)
-        r3 = nn.utils.rnn.pack_padded_sequence(x3, l3, batch_first=True)
-        r4 = nn.utils.rnn.pack_padded_sequence(x4, l4, batch_first=True)
-        r5 = nn.utils.rnn.pack_padded_sequence(x5, l5, batch_first=True)
+        for i in range(self.num_channels):
+            x[i], l[i], ind[i] = self.sort(inp[i], lengths[:, i])
+            r[i] = nn.utils.rnn.pack_padded_sequence(x[i], l[i], batch_first=True)
+            _, x[i] = self.layers[i](r[i])
+            x[i], l[i], ind[i] = self.unsort(x[i].squeeze(), l[i], ind[i])
 
-        o0, q0 = self.rnn0(r0)
-        o1, q1 = self.rnn1(r1)
-        o2, q2 = self.rnn2(r2)
-        o3, q3 = self.rnn3(r3)
-        o4, q4 = self.rnn4(r4)
-        o5, q5 = self.rnn5(r5)
-
-        x0, l0, i0 = self.unsort(q0.squeeze(), l0, i0)
-        x1, l1, i1 = self.unsort(q1.squeeze(), l1, i1)
-        x2, l2, i2 = self.unsort(q2.squeeze(), l2, i2)
-        x3, l3, i3 = self.unsort(q3.squeeze(), l3, i3)
-        x4, l4, i4 = self.unsort(q4.squeeze(), l4, i4)
-        x5, l5, i5 = self.unsort(q5.squeeze(), l5, i5)
-
-        x = torch.stack([x0, x1, x2, x3, x4, x5], dim=1)
+        x = torch.stack(x, dim=1)
         x = x.view(x.shape[0], -1)
 
         x = self.relu(x)
