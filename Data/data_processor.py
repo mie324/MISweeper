@@ -101,6 +101,11 @@ for idx, (groupname, df) in enumerate(train_norm):
     # Merge the obj_data array into the data array
     data[idx] = obj_data
 
+# The data object is too long in dim 3, it actually needs to be of size lengths.max(),
+# which we didn't know before
+
+data = data[:, :, :72]
+
 # Save the data
 np.save('TrainData/data.npy', data)
 np.save('TrainData/labels.npy', np.array(labels_norm))
