@@ -1,19 +1,12 @@
 from Model.model_parser import load_net
 from Config.config_parser import load_config
 from Config.config_parser import get_data_config
+from Config.config_parser import get_device
 from Data.data_loader import get_data_loader
 from evaluation_handler import EvaluationHandler
 
 import torch
 import time
-
-
-def get_device():
-    # device_type = "cuda" if torch.cuda.is_available() else "cpu"
-    device_type = "cpu"
-    device = torch.device(device_type)
-    print("Device type: ", device_type)
-    return device
 
 
 def main():
