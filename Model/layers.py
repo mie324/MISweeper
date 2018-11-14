@@ -16,12 +16,18 @@ class MultiStreamRNN(nn.Module):
 
     def __init__(self, num_channels, layer):
         super(MultiStreamRNN, self).__init__()
+        self.device = torch.device("cpu")
         self.num_channels = num_channels
 
         self.layers = []
         for i in range(num_channels):
             setattr(self, "rnn" + str(i), layer)
             self.layers.append(layer)
+
+    # def to(self, *args, **kwargs):
+    #     super(nn.Module).to(args, kwargs)
+    #     device, dtype, non_blocking = torch._C._nn._parse_to(*args, **kwargs)
+    #     self.device = device
 
     def forward(self, x):
         inp = x[0]
@@ -41,6 +47,7 @@ class MultiStreamRNN(nn.Module):
             x[i] = self.unsort(x[i].squeeze(), ind[i])
 
         x = torch.stack(x, dim=1)
+
         return x.view(x.shape[0], -1)
 
     def sort(self, x, length):

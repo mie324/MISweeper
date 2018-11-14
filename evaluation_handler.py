@@ -29,7 +29,7 @@ class EvaluationHandler:
             inputs = inputs.float().to(self.device) if type(inputs) != list \
                 else [inp.float().to(self.device) for inp in inputs]
             labels = labels.float().to(self.device)
-            lengths = lengths.int()
+            lengths = lengths.int().to(self.device)
 
             outputs = net(inputs, lengths).float().to(self.device)
 

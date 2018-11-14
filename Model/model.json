@@ -7,11 +7,18 @@
       },
     "num_streams": 6
   },
-  "view": {},
   "lin_1": {
     "in_features": 84,
+    "out_features": 200
+  },
+  "sig_1": {
+
+  },
+  "lin_2": {
+    "in_features": 200,
     "out_features": 14
   },
-  "relu_1": {
+  "sig_2": {
+
   }
 }
