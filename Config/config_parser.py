@@ -38,7 +38,7 @@ def load_config(net_params):
     acc = parse_acc(config["one_hot"])
     optimizer = parse_optimizer(config["optimizer"], learning_rate, net_params)
 
-    return learning_rate, batch_size, num_epochs, eval_every, loss, acc, optimizer, seed
+    return learning_rate, batch_size, num_epochs, eval_every, loss, acc, optimizer, seed, device
 
 
 def get_data_config():

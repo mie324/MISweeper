@@ -1,7 +1,6 @@
 from Model.model_parser import load_net
 from Config.config_parser import load_config
 from Config.config_parser import get_data_config
-from Config.config_parser import get_device
 from Data.data_loader import get_data_loader
 from evaluation_handler import EvaluationHandler
 
@@ -11,12 +10,11 @@ import time
 
 def main():
 
-    device = get_device()
-
-    net = load_net().to(device)
-    learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed = load_config(net.parameters())
+    net = load_net()
+    learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed, device = load_config(net.parameters())
     train_loader, val_loader = get_data_loader(*get_data_config())
 
+    net = net.to(device)
     torch.manual_seed(seed)
 
     eval_handler = EvaluationHandler(val_loader, acc_f, loss_f, device)
