@@ -43,8 +43,10 @@ class MultiStreamRNN(nn.Module):
         for i in range(self.num_channels):
             x[i], l[i], ind[i] = self.sort(inp[i], lengths[:, i])
             r[i] = nn.utils.rnn.pack_padded_sequence(x[i], l[i], batch_first=True)
-            _, x[i] = self.layers[i](r[i])
-            x[i] = self.unsort(x[i].squeeze(), ind[i])
+            _, b = self.layers[i](r[i])
+            c = b[-1]
+            a = self.unsort(c.squeeze(), ind[i])
+            x[i] = a
 
         x = torch.stack(x, dim=1)
 
