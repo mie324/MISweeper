@@ -1,10 +1,9 @@
 {
-  "multi": {
-    "layer_name": "rnn",
+  "multirnn": {
     "layer_args": {
         "input_size": 2,
         "hidden_size": 14,
-        "batch_first": true,
+        "batch_first": true
       },
     "num_streams": 6
   },

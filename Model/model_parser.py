@@ -1,7 +1,7 @@
 import json
 import torch
 
-from Model.model_abs import Net
+from Model.model import Net
 from Model.layers import *
 
 
@@ -43,16 +43,15 @@ def parse_layer(layer_name, args):
         layer = torch.nn.Dropout
     elif layer_name == "view":
         layer = ViewLayer
-    elif layer_name == "multi":
-        return parse_multi_stream(args)
+    elif layer_name == "multirnn":
+        return parse_multi_stream_rnn(args)
 
     return layer(**args)
 
 
-def parse_multi_stream(layer):
+def parse_multi_stream_rnn(layer):
 
-    layer_name = layer["layer_name"]
     layer_args = layer["layer_args"]
     num_streams = layer["num_streams"]
 
-    return MultiStreamLayer(layer_name, parse_layer(layer_name, layer_args), num_streams)
+    return MultiStreamRNN(num_streams, parse_layer("rnn", layer_args))

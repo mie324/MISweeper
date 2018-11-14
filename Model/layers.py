@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+import numpy as np
 
 
 class ViewLayer(nn.Module):
@@ -11,24 +12,43 @@ class ViewLayer(nn.Module):
         return x.view(x.shape[0], -1)
 
 
-class MultiStreamLayer(nn.Module):
+class MultiStreamRNN(nn.Module):
 
-    def __init__(self, layer_name, layer_type, layer_num):
-        super(MultiStreamLayer, self).__init__()
+    def __init__(self, num_channels, layer):
+        super(MultiStreamRNN, self).__init__()
+        self.num_channels = num_channels
+
         self.layers = []
-        for i in range(layer_num):
-            setattr(self, layer_name+str(i), layer_type)
-            self.layers.append(layer_type)
+        for i in range(num_channels):
+            setattr(self, "rnn" + str(i), layer)
+            self.layers.append(layer)
 
-    def forward(self, *input):
-        input = input[0]
-        res = []
-        for i in range(len(self.layers)):
-            lay = self.layers[i]
-            inp = input[i]
-            # lengths =
-            r, _ = lay(inp)
-            r = r[:,-1,:]
-            res.append(r.squeeze())
+    def forward(self, x):
+        inp = x[0]
+        lengths = x[1]
 
-        return torch.stack(res, dim=1)
+        inp = torch.stack(inp, dim=0)
+
+        x = [None] * self.num_channels
+        l = [None] * self.num_channels
+        ind = [None] * self.num_channels
+        r = [None] * self.num_channels
+
+        for i in range(self.num_channels):
+            x[i], l[i], ind[i] = self.sort(inp[i], lengths[:, i])
+            r[i] = nn.utils.rnn.pack_padded_sequence(x[i], l[i], batch_first=True)
+            _, x[i] = self.layers[i](r[i])
+            x[i] = self.unsort(x[i].squeeze(), ind[i])
+
+        x = torch.stack(x, dim=1)
+        return x.view(x.shape[0], -1)
+
+    def sort(self, x, length):
+        ind = np.argsort(length, kind="mergesort")
+
+        return x[ind].flip([0, 1]), length[ind].flip([0]), ind
+
+    def unsort(self, x, ind):
+        ind = np.argsort(ind, kind="mergesort")
+
+        return x.flip([0, 1])[ind]

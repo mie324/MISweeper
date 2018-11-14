@@ -12,7 +12,7 @@
   "optimizer": {
     "name": "adam",
     "kwargs": {
-      "weight_decay": 0
+      "weight_decay": 0.01
     }
   },
   "data_name": "regular",
