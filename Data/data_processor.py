@@ -58,9 +58,16 @@ def normalize_df(df):
 
     return df
 
+def channel_onehot(ch):
+    res = np.zeros(6)
+    res[ch] = 1
+    return res
+
 
 # Create the 3-dimensional data array, initially empty (with np.nan)
-dims = (train_stats.shape[0], 12, train_stats['size'].max())
+dims = (train_stats.shape[0], 48, train_stats['size'].max())
+# Dim 2 now needs to be bigger, since we're also going to append one-hot encoding of the channel
+# information before each [date, time series]
 data = np.empty(dims)
 # data.fill(np.nan)
 train_norm = train.apply(normalize_df).groupby('object_id')
@@ -94,6 +101,7 @@ for idx, (groupname, df) in enumerate(train_norm):
             mjd_flux.loc['mjd'].iloc[0] = 0
 
             # Insert the flux into the object array
+            # This is where channels need to be inserted
             obj_data[2*i:(2*i+2), :mjd_flux.shape[1]] = mjd_flux
 
             # Record the lengths
@@ -105,6 +113,13 @@ for idx, (groupname, df) in enumerate(train_norm):
 # which we didn't know before
 
 data = data[:, :, :72]
+
+# We're going to remove all objects which have a time series of length less than 10
+# This is a really inefficient way of doing it
+#
+# mask = (lengths < 10).any(axis=1)
+# inds = np.where(mask == True)       # The indices we need to remove
+# data_new = np.empty((dims[0], dims[1], 72))
 
 # Save the data
 np.save('TrainData/data.npy', data)
