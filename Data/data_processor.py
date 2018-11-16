@@ -99,13 +99,18 @@ for idx, (groupname, df) in enumerate(train_norm):
             mjd_flux.loc['mjd'] = mjd_flux.loc['mjd'].diff()
             # Finally, set the first element to zero instead of nan
             mjd_flux.loc['mjd'].iloc[0] = 0
+            series_length = mjd_flux.shape[1]
 
             # Insert the flux into the object array
             # This is where channels need to be inserted
-            obj_data[2*i:(2*i+2), :mjd_flux.shape[1]] = mjd_flux
+            channel_oh = np.vstack([channel_onehot(i)]*series_length).T
+            obj_data[8*i:(8*i+6), :mjd_flux.shape[1]] = channel_oh
+
+            # Insert the time and flux data
+            obj_data[(8*i+6):(8*i+8), :series_length] = mjd_flux
 
             # Record the lengths
-            lengths[idx][i] = mjd_flux.shape[1]
+            lengths[idx][i] = series_length
     # Merge the obj_data array into the data array
     data[idx] = obj_data
 
