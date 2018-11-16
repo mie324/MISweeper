@@ -1,6 +1,7 @@
 
 from Results.results_handler import ResultsHandler
-
+import numpy as np
+import torch
 
 class EvaluationHandler:
 
@@ -30,6 +31,11 @@ class EvaluationHandler:
                 else [inp.float().to(self.device) for inp in inputs]
             labels = labels.float().to(self.device)
             lengths = lengths.int().to(self.device)
+
+            argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+            lengths = lengths[argsort_map]
+            labels = labels[argsort_map]
+            inputs = inputs[argsort_map]
 
             outputs = net(inputs, lengths).float().to(self.device)
 

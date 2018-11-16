@@ -10,12 +10,12 @@
     }
   },
   "optimizer": {
-    "name": "adam",
+    "name": "sgd",
     "kwargs": {
-      "weight_decay": 0.01
+      "momentum":0.9
     }
   },
-  "data_name": "regular",
+  "data_name": "neww",
   "one_hot": 0,
   "seed": 1234567,
   "split": 0.1,

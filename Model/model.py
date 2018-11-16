@@ -1,6 +1,7 @@
 import torch.nn as nn
 import torch
 
+
 class Net(nn.Module):
 
     def __init__(self, layer_names, layers):
@@ -11,7 +12,15 @@ class Net(nn.Module):
 
     def forward(self, *x):
         for layer in self.layers:
-            x = layer(x)
+            if type(layer) == nn.RNN:
+                length = x[1]
+                x = x[0]
+                x = nn.utils.rnn.pack_padded_sequence(x, length, batch_first=True)
+                _, x = layer(x)
+                x = x[-1].squeeze()
+            else:
+                x = layer(x)
+
         return x.squeeze()
 
     def to(self, *args, **kwargs):
