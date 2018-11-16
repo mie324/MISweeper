@@ -21,6 +21,12 @@ def load_data(data_name):
         labels = loaded['labels'].transpose()
         instances = loaded['data']
         lengths = loaded['lengths']
+    elif data_name == "neww":
+        loaded = np.load('Data/TrainData/train_data_new.npz')
+        labels = loaded['labels'].transpose()
+        instances = loaded['data']
+        lengths = loaded['lengths']
+
     return instances, labels, lengths
 
 

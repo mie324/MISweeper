@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch
 import numpy as np
 
+
 class Net(nn.Module):
     def __init__(self, num_channels=6):
 
@@ -17,7 +18,6 @@ class Net(nn.Module):
         self.lin2 = nn.Linear(in_features=1000, out_features=200)
         self.lin3 = nn.Linear(in_features=200, out_features=14)
         self.act = nn.ReLU()
-
 
     def forward(self, inp, lengths):
         inp = torch.stack(inp, dim=0)
@@ -43,13 +43,11 @@ class Net(nn.Module):
         x = self.act(x)
         return x
 
-
     def sort(self, x, length):
         ind = np.argsort(length, kind="mergesort")
         x = x[ind].flip([0, 1])
         l = length[ind].flip([0])
         return x, l, ind
-
 
     def unsort(self, x, length, ind):
         x = x.flip([0, 1])

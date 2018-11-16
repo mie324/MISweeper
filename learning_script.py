@@ -9,12 +9,13 @@ from Model.model_conc import Net
 
 import torch
 import time
+import numpy as np
 
 
 def main():
 
-    # net = load_net()
-    net = Net()
+    net = load_net()
+    # net = Net()
     learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed, device = load_config(net.parameters())
     train_loader, val_loader = get_data_loader(*get_data_config())
 
@@ -36,6 +37,11 @@ def main():
             inputs = inputs.float().to(device) if type(inputs) != list else [inp.float().to(device) for inp in inputs]
             labels = labels.float().to(device)
             lengths = lengths.int().to(device)
+
+            argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+            lengths = lengths[argsort_map]
+            labels = labels[argsort_map]
+            inputs = inputs[argsort_map]
 
             optimizer.zero_grad()
 

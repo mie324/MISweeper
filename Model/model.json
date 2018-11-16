@@ -1,22 +1,11 @@
 {
-  "multirnn": {
-    "layer_args": {
-        "input_size": 2,
-        "hidden_size": 85,
-        "num_layers": 2,
-        "batch_first": true
-      },
-    "num_streams": 6
-  },
-  "lin_1": {
-    "in_features": 510,
-    "out_features": 1000
-  },
-  "sig_1": {
-
+  "rnn_1": {
+    "input_size": 8,
+    "hidden_size": 25,
+    "batch_first": true
   },
   "lin_2": {
-    "in_features": 1000,
+    "in_features": 25,
     "out_features": 200
   },
   "sig_2": {

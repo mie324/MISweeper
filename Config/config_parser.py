@@ -50,6 +50,8 @@ def parse_optimizer(optimizer_config, learning_rate, net_params):
     optimizer = None
     if optimizer_config["name"] == "adam":
         optimizer = optim.Adam
+    elif optimizer_config["name"] == "sgd":
+        optimizer = optim.SGD
 
     return optimizer(params=net_params, lr=learning_rate, **optimizer_config["kwargs"])
 
