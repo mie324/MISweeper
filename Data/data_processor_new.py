@@ -78,7 +78,7 @@ for idx, (groupname, df) in enumerate(train_norm):
     data[idx] = obj_data
     lengths[idx] = series_length
 
-np.savez_compressed('TrainData/train_data_new.npz', data=data, lengths=lengths, lables=labels_norm)
+np.savez_compressed('TrainData/train_data_new.npz', data=data, lengths=lengths, labels=labels_norm)
 
 
 
