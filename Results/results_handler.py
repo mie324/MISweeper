@@ -19,6 +19,8 @@ class ResultsHandler:
 
         self.dst_path = self.device_name + "/" + get_note()
 
+        self.path_to_best_model = ''
+
     def create_dst_dir(self):
         i = 0
         directory_created = False
@@ -31,15 +33,14 @@ class ResultsHandler:
             except FileExistsError:
                 i += 1
 
-        return self.dst_path + "_%d" % i
-
     def save_model(self, net, t_acc, t_loss, val_acc, val_loss):
         if not os.path.isdir(self.dst_path):
             self.create_dst_dir()
 
-        copy2("Config/config.json", self.dst_path+"/"+"config.json")
-        copy2("Model/model.json", self.dst_path+"/"+"model.json")
-        torch.save(net.state_dict(), self.dst_path+"/"+"model.pt")
+        copy2("Config/config.json", os.path.join(self.dst_path, 'config.json'))
+        copy2("Model/model.json", os.path.join(self.dst_path, 'model.json'))
+        torch.save(net.state_dict(), os.path.join(self.dst_path, 'model.pt'))
+        self.path_to_best_model = os.path.join(self.dst_path, 'model.pt')
 
         df = pd.DataFrame({"epoch": list(range(len(t_acc))), "train_acc": t_acc, "train_loss": t_loss})
         df.to_csv(self.dst_path+"/"+"train.csv", index=False, sep="\t")

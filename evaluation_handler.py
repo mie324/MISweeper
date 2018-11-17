@@ -2,6 +2,9 @@
 from Results.results_handler import ResultsHandler
 import numpy as np
 import torch
+from sklearn.metrics import confusion_matrix
+from Results.results_parser import plot_confusion_matrix
+import os
 
 class EvaluationHandler:
 
@@ -52,7 +55,27 @@ class EvaluationHandler:
         if self.val_acc[-1] > self.results_handler.get_best_accuracy():
             self.results_handler.save_model(net, self.train_acc, self.train_loss, self.val_acc, self.val_loss)
             self.results_handler.save_best_accuracy(str(self.val_acc[-1]))
+            self.generate_confusion_matrix(net)
 
     def print_logs(self):
         print(self.logs)
         self.logs = ""
+
+    def generate_confusion_matrix(self, net):
+        inputs, labels, lengths = self.loader.dataset.get_dataset()
+
+        inputs = torch.FloatTensor(inputs).to(self.device)
+        lengths = torch.LongTensor(lengths).to(self.device)
+
+        # Sort everything so lengths is in decreasing orders
+        argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+        lengths = lengths[argsort_map]
+        labels = labels[argsort_map]
+        inputs = inputs[argsort_map]
+
+        predictions = net(inputs, lengths).float().to(self.device).argmax(dim=1).numpy()
+
+        cm = confusion_matrix(labels, predictions)
+        plot_confusion_matrix(os.path.join(self.results_handler.dst_path, 'confusion_matrix.png'), cm, labels, normalize=True)
+
+

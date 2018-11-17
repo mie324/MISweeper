@@ -64,6 +64,5 @@ def main():
     print('Finished Training')
     print("Total time elapsed: {:.2f} seconds".format(time.time() - start_time))
 
-
 if __name__ == '__main__':
     main()

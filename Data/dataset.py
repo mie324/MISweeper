@@ -20,3 +20,6 @@ class LSSTDataset(data.Dataset):
 
         # return tuple(features), self.y[index], self.length[index]
         return self.X[index], self.y[index], self.length[index]
+
+    def get_dataset(self):
+        return self.X, self.y, self.length
