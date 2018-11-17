@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 import os
 
-def plot_confusion_matrix(path, cm, classes,
+def plot_confusion_matrix(path, cm,
                           normalize=False,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues):
@@ -27,9 +27,10 @@ def plot_confusion_matrix(path, cm, classes,
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
-    # tick_marks = np.arange(len(classes))
-    # plt.xticks(tick_marks, classes, rotation=45)
-    # plt.yticks(tick_marks, classes)
+    classes = [str(i) for i in [6, 15, 16, 42, 52, 53, 62, 64, 65, 67, 88, 90, 92, 95]]
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes)
+    plt.yticks(tick_marks, classes)
 
     fmt = '.1f' if normalize else 'd'
     thresh = cm.max() / 2.
