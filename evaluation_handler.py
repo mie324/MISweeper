@@ -73,7 +73,7 @@ class EvaluationHandler:
         labels = labels[argsort_map]
         inputs = inputs[argsort_map]
 
-        predictions = net(inputs, lengths).float().to(self.device).argmax(dim=1).numpy()
+        predictions = net(inputs, lengths).float().to(self.device).argmax(dim=1).cpu().numpy()
 
         cm = confusion_matrix(labels, predictions)
         plot_confusion_matrix(os.path.join(self.results_handler.dst_path, 'confusion_matrix.png'), cm, normalize=True)

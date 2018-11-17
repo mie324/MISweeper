@@ -16,8 +16,9 @@
     }
   },
   "data_name": "neww",
-  "one_hot": 0,
+  "one_hot": false,
   "seed": 1234567,
   "split": 0.1,
+  "device": "cpu",
   "note": "rnn_rel"
 }

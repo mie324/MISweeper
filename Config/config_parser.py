@@ -3,6 +3,7 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 import numpy as np
+from sklearn.metrics import f1_score
 
 
 def get_device():
@@ -68,4 +69,6 @@ def parse_loss(loss_config, device):
 
 
 def parse_acc(one_hot):
-    return lambda l, o: torch.sum((l.argmax(dim=1) if one_hot else l).float() == o.argmax(dim=1).float()).item()
+    # return lambda l, o: torch.sum((l.argmax(dim=1) if one_hot else l).float() == o.argmax(dim=1).float()).item()
+    return lambda y_true, y_pred: f1_score(y_true.cpu().detach().numpy(), y_pred.cpu().detach().numpy().argmax(axis=1), average='weighted')
+
