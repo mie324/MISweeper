@@ -15,7 +15,7 @@
       "momentum":0.9
     }
   },
-  "data_name": "neww",
+  "data_name": "balanced",
   "one_hot": false,
   "seed": 1234567,
   "split": 0.1,
