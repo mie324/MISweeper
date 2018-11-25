@@ -5,20 +5,18 @@
   "eval_every": 1,
   "loss": {
     "name": "ce",
-    "weight": "Config/rel_weights.npy",
+    "weight": "Config/simple_weights.npy",
     "kwargs": {
     }
   },
   "optimizer": {
-    "name": "sgd",
+    "name": "adam",
     "kwargs": {
-      "momentum":0.9
     }
   },
   "data_name": "balanced",
   "one_hot": false,
   "seed": 1234567,
   "split": 0.1,
-  "device": "cpu",
   "note": "rnn_rel"
 }

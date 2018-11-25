@@ -64,7 +64,8 @@ def parse_loss(loss_config, device):
     elif loss_config["name"] == "nll":
         return nn.NLLLoss(weight=torch.Tensor(np.load(loss_config["weight"])).to(device), **loss_config["kwargs"])
     elif loss_config["name"] == "ce":
-        return nn.CrossEntropyLoss(weight=torch.Tensor(np.load(loss_config["weight"])).to(device), **loss_config["kwargs"])
+        return nn.CrossEntropyLoss()
+        # return nn.CrossEntropyLoss(weight=torch.Tensor(np.load(loss_config["weight"])).to(device), **loss_config["kwargs"])
     return loss(**loss_config["kwargs"])
 
 

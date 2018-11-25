@@ -62,20 +62,44 @@ class EvaluationHandler:
         self.logs = ""
 
     def generate_confusion_matrix(self, net):
-        inputs, labels, lengths = self.loader.dataset.get_dataset()
 
-        inputs = torch.FloatTensor(inputs).to(self.device)
-        lengths = torch.LongTensor(lengths).to(self.device)
+        predictions = np.array([])
+        l = np.array([])
+
+        for data in self.loader:
+            inputs, labels, lengths = data
+
+            inputs = inputs.float().to(self.device) if type(inputs) != list \
+                else [inp.float().to(self.device) for inp in inputs]
+            labels = labels.float().to(self.device)
+            lengths = lengths.int().to(self.device)
+
+            argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+            lengths = lengths[argsort_map]
+            labels = labels[argsort_map]
+            inputs = inputs[argsort_map]
+
+            outputs = net(inputs, lengths).float().to(self.device)
+
+            predictions = np.append(predictions, outputs.argmax(dim=1).cpu().detach().numpy())
+            l = np.append(labels, l)
+
+        # inputs, labels, lengths = self.loader.dataset.get_dataset()
+
+        # inputs = torch.FloatTensor(inputs).to(self.device)
+        # lengths = torch.LongTensor(lengths).to(self.device)
 
         # Sort everything so lengths is in decreasing orders
-        argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
-        lengths = lengths[argsort_map]
-        labels = labels[argsort_map]
-        inputs = inputs[argsort_map]
+        # argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+        # lengths = lengths[argsort_map]
+        # labels = labels[argsort_map]
+        # inputs = inputs[argsort_map]
 
-        predictions = net(inputs, lengths).float().to(self.device).argmax(dim=1).cpu().numpy()
+        # predictions = np.array(predictions)
 
-        cm = confusion_matrix(labels, predictions)
+        # predictions = net(inputs, lengths).float().to(self.device).argmax(dim=1).cpu().numpy()
+
+        cm = confusion_matrix(l, predictions)
         plot_confusion_matrix(os.path.join(self.results_handler.dst_path, 'confusion_matrix.png'), cm, normalize=True)
 
 

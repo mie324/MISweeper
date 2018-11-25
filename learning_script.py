@@ -4,8 +4,8 @@ from Config.config_parser import get_data_config
 from Data.data_loader import get_data_loader
 from evaluation_handler import EvaluationHandler
 
-from Model.model_conc import Net
-
+# from Model.model_conc import Net
+from Model.model_sane import Net
 
 import torch
 import time
@@ -14,8 +14,8 @@ import numpy as np
 
 def main():
 
-    net = load_net()
-    # net = Net()
+    # net = load_net()
+    net = Net()
     learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed, device = load_config(net.parameters())
     train_loader, val_loader = get_data_loader(*get_data_config())
 
