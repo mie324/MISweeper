@@ -10,12 +10,11 @@
     }
   },
   "optimizer": {
-    "name": "sgd",
+    "name": "adam",
     "kwargs": {
-      "momentum": 0.9
     }
   },
-  "data_name": "combined",
+  "data_name": "combined_balanced",
   "one_hot": false,
   "seed": 69,
   "split": 0.1,

@@ -41,6 +41,16 @@ def load_data(data_name):
 
         return stats, time_series, labels, lengths
 
+    elif data_name == "combined_balanced":
+
+        loaded = np.load('Data/TrainData/train_data_balanced.npz')
+        time_series = loaded['data']
+        lengths = loaded['lengths']
+        labels = loaded['labels']
+        stats = loaded['stats']
+
+        return stats, time_series, labels, lengths
+
     return instances, labels, lengths
 
 
