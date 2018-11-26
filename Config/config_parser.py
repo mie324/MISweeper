@@ -7,8 +7,11 @@ from sklearn.metrics import f1_score
 
 
 def get_device():
-    # device_type = "cuda" if torch.cuda.is_available() else "cpu"
-    device_type = "cpu"
+    cfg = load_config_file()
+    if "device" in cfg.keys():
+        device_type = "cuda" if torch.cuda.is_available() and cfg['device'] == 'cuda' else 'cpu'
+    else:
+        device_type = "cpu"
     device = torch.device(device_type)
     print("Device type: ", device_type)
     return device
