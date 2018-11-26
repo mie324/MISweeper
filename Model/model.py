@@ -4,37 +4,56 @@ import torch
 
 class Net(nn.Module):
 
-    def __init__(self, layer_names, layers):
-        super(Net, self).__init__()
-        for i in range(len(layers)):
-            setattr(self, layer_names[i], layers[i])
-        self.layers = layers
+    def __init__(self):
+        super().__init__()
 
-    def forward(self, *x):
-        for layer in self.layers:
-            if type(layer) == nn.RNN:
-                length = x[1]
-                x = x[0]
-                x = nn.utils.rnn.pack_padded_sequence(x, length, batch_first=True)
-                _, x = layer(x)
-                x = x[-1].squeeze()
-            else:
-                x = layer(x)
+        self.rnn1 = nn.LSTM(input_size=8, hidden_size=100, batch_first=True, num_layers=1, dropout=0.1)
+        self.bn0 = nn.BatchNorm1d(100)
 
-        return x.squeeze()
+        self.lin1 = nn.Linear(in_features=31+100, out_features=512)
+        self.bn1 = nn.BatchNorm1d(512)
 
-    def to(self, *args, **kwargs):
-        device, dtype, non_blocking = torch._C._nn._parse_to(*args, **kwargs)
+        self.lin2 = nn.Linear(in_features=512, out_features=256)
+        self.bn2 = nn.BatchNorm1d(256)
 
-        for layer in self.layers:
-            layer.to(device)
+        self.lin3 = nn.Linear(in_features=256, out_features=128)
+        self.bn3 = nn.BatchNorm1d(128)
 
-        if dtype is not None:
-            if not dtype.is_floating_point:
-                raise TypeError('nn.Module.to only accepts floating point '
-                                'dtypes, but got desired dtype={}'.format(dtype))
+        self.lin4 = nn.Linear(in_features=128, out_features=64)
+        self.bn4 = nn.BatchNorm1d(64)
 
-        def convert(t):
-            return t.to(device, dtype if t.is_floating_point() else None, non_blocking)
+        self.lin5 = nn.Linear(in_features=64, out_features=14)
 
-        return self._apply(convert)
+        self.relu = nn.ReLU()
+        self.dropout1 = nn.Dropout(0.25)
+        self.dropout2 = nn.Dropout(0.50)
+        self.sm = nn.Softmax()
+
+    def forward(self, stats, time_series, lengths):
+
+        x = nn.utils.rnn.pack_padded_sequence(time_series, lengths, batch_first=True)
+        _, x = self.rnn1(x)
+        x = x[-1][-1, :, :].squeeze()
+        x = self.bn0(x)
+
+        x = torch.cat((x, stats), 1)
+
+        x = self.relu(self.lin1(x))
+        x = self.bn1(x)
+        x = self.dropout1(x)
+
+        x = self.relu(self.lin2(x))
+        x = self.bn2(x)
+        x = self.dropout1(x)
+
+        x = self.relu(self.lin3(x))
+        x = self.bn3(x)
+        x = self.dropout1(x)
+
+        x = self.relu(self.lin4(x))
+        x = self.bn4(x)
+        x = self.dropout2(x)
+
+        x = self.sm(self.lin5(x))
+
+        return x

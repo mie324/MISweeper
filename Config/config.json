@@ -5,7 +5,7 @@
   "eval_every": 1,
   "loss": {
     "name": "ce",
-    "weight": "Config/rel_weights.npy",
+    "weight": "Config/simple_weights.npy",
     "kwargs": {
     }
   },
@@ -18,5 +18,5 @@
   "one_hot": false,
   "seed": 69,
   "split": 0.1,
-  "note": "combined"
+  "note": "combined_balanced"
 }
