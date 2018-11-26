@@ -15,12 +15,6 @@ class LSSTDataset(data.Dataset):
         return len(self.ts)
 
     def __getitem__(self, index):
-        # features = []
-        # for i in range(6):
-        #     features.append(self.X[index, 2*i:(2*i+2)].T)
-
-        # return tuple(features), self.y[index], self.length[index]
-        # return self.X[index], self.y[index], self.length[index]
         return self.stats[index], self.ts[index], self.labels[index], self.lengths[index]
 
     def get_dataset(self):
