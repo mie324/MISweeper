@@ -21,7 +21,10 @@ class LSSTDataset(data.Dataset):
 
         # return tuple(features), self.y[index], self.length[index]
         # return self.X[index], self.y[index], self.length[index]
-        return self.stats[index], self.ts[index], self.labels[index], self.lengths[index]
+        if self.labels is not None:
+            return self.stats[index], self.ts[index], self.labels[index], self.lengths[index]
+        else:
+            return self.stats[index], self.ts[index], self.lengths[index]
 
     def get_dataset(self):
         return self.stats, self.ts, self.labels, self.lengths

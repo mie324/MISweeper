@@ -20,11 +20,11 @@ train['flux_by_flux_ratio_sq'] = train['flux'] * train['flux_ratio_sq']
 aggs = {
     'mjd': ['min', 'max', 'size'],
     'passband': ['min', 'max', 'mean', 'median', 'std'],
-    'flux': ['min', 'max', 'mean', 'median', 'std','skew'],
-    'flux_err': ['min', 'max', 'mean', 'median', 'std','skew'],
+    'flux': ['min', 'max', 'mean', 'median', 'std', 'skew'],
+    'flux_err': ['min', 'max', 'mean', 'median', 'std', 'skew'],
     'detected': ['mean'],
-    'flux_ratio_sq':['sum','skew'],
-    'flux_by_flux_ratio_sq':['sum','skew'],
+    'flux_ratio_sq':['sum', 'skew'],
+    'flux_by_flux_ratio_sq': ['sum', 'skew']
 }
 
 agg_train = train.groupby('object_id').agg(aggs)
@@ -39,7 +39,6 @@ agg_train['flux_w_mean'] = agg_train['flux_by_flux_ratio_sq_sum'] / agg_train['f
 agg_train['flux_dif3'] = (agg_train['flux_max'] - agg_train['flux_min']) / agg_train['flux_w_mean']
 
 del agg_train['mjd_max'], agg_train['mjd_min']
-agg_train.head()
 
 del train
 gc.collect()
