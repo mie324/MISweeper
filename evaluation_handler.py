@@ -28,19 +28,19 @@ class EvaluationHandler:
         acc = 0.0
 
         for data in self.loader:
-            inputs, labels, lengths = data
+            inputs, labels = data
 
             inputs = inputs.float().to(self.device) if type(inputs) != list \
                 else [inp.float().to(self.device) for inp in inputs]
             labels = labels.float().to(self.device)
-            lengths = lengths.int().to(self.device)
+            # lengths = lengths.int().to(self.device)
 
-            argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
-            lengths = lengths[argsort_map]
-            labels = labels[argsort_map]
-            inputs = inputs[argsort_map]
+            # argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+            # lengths = lengths[argsort_map]
+            # labels = labels[argsort_map]
+            # inputs = inputs[argsort_map]
 
-            outputs = net(inputs, lengths).float().to(self.device)
+            outputs = net(inputs).float().to(self.device)
 
             acc += self.acc_f(labels, outputs)
             loss += self.loss_f(outputs, labels.long().to(self.device)).item()
@@ -67,19 +67,19 @@ class EvaluationHandler:
         l = np.array([])
 
         for data in self.loader:
-            inputs, labels, lengths = data
+            inputs, labels = data
 
             inputs = inputs.float().to(self.device) if type(inputs) != list \
                 else [inp.float().to(self.device) for inp in inputs]
             labels = labels.float().to(self.device)
-            lengths = lengths.int().to(self.device)
+            # lengths = lengths.int().to(self.device)
 
-            argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
-            lengths = lengths[argsort_map]
-            labels = labels[argsort_map]
-            inputs = inputs[argsort_map]
+            # argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+            # lengths = lengths[argsort_map]
+            # labels = labels[argsort_map]
+            # inputs = inputs[argsort_map]
 
-            outputs = net(inputs, lengths).float().to(self.device)
+            outputs = net(inputs).float().to(self.device)
 
             predictions = np.append(predictions, outputs.argmax(dim=1).cpu().detach().numpy())
             l = np.append(labels, l)

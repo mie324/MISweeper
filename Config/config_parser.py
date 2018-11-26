@@ -64,12 +64,11 @@ def parse_loss(loss_config, device):
     elif loss_config["name"] == "nll":
         return nn.NLLLoss(weight=torch.Tensor(np.load(loss_config["weight"])).to(device), **loss_config["kwargs"])
     elif loss_config["name"] == "ce":
-        return nn.CrossEntropyLoss()
-        # return nn.CrossEntropyLoss(weight=torch.Tensor(np.load(loss_config["weight"])).to(device), **loss_config["kwargs"])
+        # return nn.CrossEntropyLoss()
+        return nn.CrossEntropyLoss(weight=torch.Tensor(np.load(loss_config["weight"])).to(device), **loss_config["kwargs"])
     return loss(**loss_config["kwargs"])
 
 
 def parse_acc(one_hot):
-    # return lambda l, o: torch.sum((l.argmax(dim=1) if one_hot else l).float() == o.argmax(dim=1).float()).item()
-    return lambda y_true, y_pred: f1_score(y_true.cpu().detach().numpy(), y_pred.cpu().detach().numpy().argmax(axis=1), average='weighted')
-
+    return lambda l, o: torch.sum((l.argmax(dim=1) if one_hot else l).float() == o.argmax(dim=1).float()).item()
+    # return lambda y_true, y_pred: f1_score(y_true.cpu().detach().numpy(), y_pred.cpu().detach().numpy().argmax(axis=1), average='weighted')

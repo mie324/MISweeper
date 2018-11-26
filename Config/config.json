@@ -1,22 +1,23 @@
 {
-  "batch_size": 64,
-  "learning_rate": 0.001,
-  "num_epochs": 500,
+  "batch_size": 1024,
+  "learning_rate": 0.01,
+  "num_epochs": 50000,
   "eval_every": 1,
   "loss": {
     "name": "ce",
-    "weight": "Config/simple_weights.npy",
+    "weight": "Config/rel_weights.npy",
     "kwargs": {
     }
   },
   "optimizer": {
-    "name": "adam",
+    "name": "sgd",
     "kwargs": {
+      "momentum": 0.9
     }
   },
-  "data_name": "balanced",
+  "data_name": "simple",
   "one_hot": false,
-  "seed": 1234567,
+  "seed": 69,
   "split": 0.1,
-  "note": "rnn_rel"
+  "note": "simple_rel"
 }

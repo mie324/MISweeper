@@ -5,7 +5,7 @@ from Data.data_loader import get_data_loader
 from evaluation_handler import EvaluationHandler
 
 # from Model.model_conc import Net
-from Model.model_sane import Net
+from Model.model_simple import Net
 
 import torch
 import time
@@ -32,20 +32,21 @@ def main():
 
         for data in train_loader:
 
-            inputs, labels, lengths = data
+            inputs, labels= data
 
             inputs = inputs.float().to(device) if type(inputs) != list else [inp.float().to(device) for inp in inputs]
             labels = labels.float().to(device)
-            lengths = lengths.int().to(device)
-
-            argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
-            lengths = lengths[argsort_map]
-            labels = labels[argsort_map]
-            inputs = inputs[argsort_map]
+            # lengths = lengths.int().to(device)
+            #
+            # argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+            # lengths = lengths[argsort_map]
+            # labels = labels[argsort_map]
+            # inputs = inputs[argsort_map]
 
             optimizer.zero_grad()
 
-            outputs = net(inputs, lengths).float().to(device)
+            outputs = net(inputs).float().to(device)
+
             loss = loss_f(outputs, labels.long().to(device))
 
             loss.backward()
@@ -59,10 +60,14 @@ def main():
         if epoch % eval_every == 0:
             eval_handler.evaluate(net)
 
+        if epoch & 500 == 0:
+            optimizer.__setattr__("lr", 0.6*learning_rate)
+
         eval_handler.print_logs()
 
     print('Finished Training')
     print("Total time elapsed: {:.2f} seconds".format(time.time() - start_time))
+
 
 if __name__ == '__main__':
     main()
