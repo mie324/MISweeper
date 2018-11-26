@@ -9,6 +9,8 @@ from Config.config_parser import *
 
 device = get_device()  
 
+import warnings
+warnings.filterwarnings("ignore")
 
 def normalize_df(df):
     flux_mean = df['flux'].mean()
@@ -31,8 +33,8 @@ def channel_onehot(ch):
     res[ch] = 1
     return res
 
-
-chunks = 5000000 # How many lines to read at a time
+chunks = 2000
+# chunks = 5000000 # How many lines to read at a time
 
 # Load the metadata
 meta_test = pd.read_csv('Data/RawData/test_set_metadata.csv')
@@ -123,16 +125,24 @@ for df_idx, df in enumerate(pd.read_csv('Data/RawData/test_set.csv', chunksize=c
 
     # Create the data loader
     test_dataset = LSSTDataset(full_test_ss, data, None, lengths)
-    test_loader = DataLoader(test_dataset, get_batch_size())
+    test_loader = DataLoader(test_dataset, batch_size=get_batch_size())
 
     net = Net().to(device)
 
     for pred_data in test_loader:
-        _stats, _time_series, _lengths = pred_data
-        _time_series = _time_series.float().to(device) if type(_time_series) != list else [inp.float().to(device) for
-                                                                                           inp in _time_series]
-        _stats = _stats.float().to(device)
-        _lengths = _lengths.float().to(device)
+        stats, time_series, lengths = pred_data
 
-        predictions = net(_stats, _time_series, _lengths).float().to(device)
+        time_series = time_series.float().to(device) if type(time_series) != list else [inp.float().to(device) for inp
+                                                                                        in time_series]
+        stats = stats.float().to(device)
+        lengths = lengths.int().to(device)
+
+        argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+        lengths = lengths[argsort_map]
+        time_series = time_series[argsort_map]
+        stats = stats[argsort_map]
+
+        predictions = net(stats, time_series, lengths).float().to(device)
+        predictions = predictions[argsort_map]
+
         print('Got predictions')

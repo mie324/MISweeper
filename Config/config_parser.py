@@ -44,8 +44,10 @@ def load_config(net_params):
 
     return learning_rate, batch_size, num_epochs, eval_every, loss, acc, optimizer, seed, device
 
+
 def get_batch_size():
     return load_config_file()['batch_size']
+
 
 def get_data_config():
     config = load_config_file()
