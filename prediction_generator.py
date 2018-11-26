@@ -12,6 +12,12 @@ device = get_device()
 import warnings
 warnings.filterwarnings("ignore")
 
+sample_sub = pd.read_csv('Data/RawData/sample_submission.csv')
+class_names = list(sample_sub.columns[1:-1])
+submission_columns = list(sample_sub.columns)
+del sample_sub
+
+
 def normalize_df(df):
     flux_mean = df['flux'].mean()
     flux_std = df['flux'].std()
@@ -38,6 +44,8 @@ chunks = 2000
 
 # Load the metadata
 meta_test = pd.read_csv('Data/RawData/test_set_metadata.csv')
+
+all_preds = None # Store the predictions
 
 for df_idx, df in enumerate(pd.read_csv('Data/RawData/test_set.csv', chunksize=chunks, iterator=True)):
     # Apply the same processing to the test set as the training set
@@ -128,6 +136,7 @@ for df_idx, df in enumerate(pd.read_csv('Data/RawData/test_set.csv', chunksize=c
     test_loader = DataLoader(test_dataset, batch_size=get_batch_size())
 
     net = Net().to(device)
+    net.load_state_dict(torch.load('Results/Graham-PC-Ubuntu/combined_balanced_1/model.pt'))
 
     for pred_data in test_loader:
         stats, time_series, lengths = pred_data
@@ -143,6 +152,19 @@ for df_idx, df in enumerate(pd.read_csv('Data/RawData/test_set.csv', chunksize=c
         stats = stats[argsort_map]
 
         predictions = net(stats, time_series, lengths).float().to(device)
-        predictions = predictions[argsort_map]
+        predictions = predictions[argsort_map].cpu().detach().numpy()
 
-        print('Got predictions')
+        if all_preds is None:
+            all_preds = predictions
+        else:
+            all_preds = np.vstack((all_preds, predictions))
+
+final_predictions = pd.DataFrame(all_preds)
+final_predictions.insert(loc=0, column='object_id', value=test_stats['object_id'])
+final_predictions.insert(loc=-1, column='class_99', value=0)
+final_predictions.columns = submission_columns
+
+final_predictions.to_csv('Data/submission.csv')
+
+
+
