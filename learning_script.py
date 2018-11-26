@@ -3,7 +3,7 @@ from Config.config_parser import get_data_config
 from Data.data_loader import get_data_loader
 from evaluation_handler import EvaluationHandler
 
-from Model.model import Net
+from model import Net
 
 import torch
 import time

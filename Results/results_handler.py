@@ -38,7 +38,7 @@ class ResultsHandler:
             self.create_dst_dir()
 
         copy2("Config/config.json", os.path.join(self.dst_path, 'config.json'))
-        copy2("Model/model.json", os.path.join(self.dst_path, 'model.json'))
+        copy2("model.py", os.path.join(self.dst_path, 'model.py'))
         torch.save(net.state_dict(), os.path.join(self.dst_path, 'model.pt'))
         self.path_to_best_model = os.path.join(self.dst_path, 'model.pt')
 
