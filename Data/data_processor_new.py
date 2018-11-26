@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 # Import the training set
 train = pd.read_csv('RawData/training_set.csv').groupby('object_id')
@@ -57,10 +58,14 @@ train_norm = train.apply(normalize_df).groupby('object_id')
 lengths = np.zeros(dims[0])
 
 labels_norm = []
+object_ids = []
 
-for idx, (groupname, df) in enumerate(train_norm):
+for idx, (obj_id, df) in enumerate(train_norm):
     # Record the label, in case the data has been unordered
-    labels_norm.append(labels[groupname])
+    labels_norm.append(labels[obj_id])
+
+    # Also, save the object ids again for the same reason
+    object_ids.append(obj_id)
 
     series_length = df.shape[0]
 
@@ -92,15 +97,19 @@ sampling_freq = mean_samples / train_meta['target'].value_counts()
 # Split the data by class again
 objects_by_class = {i: [] for i in sampling_freq.keys()}
 lengths_by_class = {i: [] for i in sampling_freq.keys()}
+object_ids_by_class = {i: [] for i in sampling_freq.keys()}
 
 for idx, label in enumerate(labels_norm):
     objects_by_class[label].append(data[idx, :, :])
     lengths_by_class[label].append(lengths[idx])
+    object_ids_by_class[label].append(object_ids[idx])
 
 # Do the oversampling
 data_balanced = []
 labels_balanced = []
 lengths_balanced = []
+sampling_rates = {i: 0 for i in train_meta['object_id'].values}
+samples_balanced = []
 
 for label in objects_by_class.keys():
     if sampling_freq[label] < 1: # Undersampling case
@@ -109,6 +118,8 @@ for label in objects_by_class.keys():
             data_balanced.append(objects_by_class[label][i])
             labels_balanced.append(label)
             lengths_balanced.append(lengths_by_class[label][i])
+            sampling_rates[object_ids_by_class[label][i]] += 1
+            samples_balanced.append(object_ids_by_class[label][i])
     else: # Oversampling case
         oversample_rate = int(round(sampling_freq[label]))
         for i in range(len(objects_by_class[label])):
@@ -116,17 +127,29 @@ for label in objects_by_class.keys():
                 data_balanced.append(objects_by_class[label][i])
                 labels_balanced.append(label)
                 lengths_balanced.append(lengths_by_class[label][i])
+                sampling_rates[object_ids_by_class[label][i]] += 1
+                samples_balanced.append(object_ids_by_class[label][i])
+
+# Pull in the preprocessed stats
+full_train = pd.read_csv('RawData/train_stats.csv', index_col=0)
+
+# Apply the same over/under sampling
+full_train_balanced = full_train.loc[samples_balanced]
+
+ss = StandardScaler()
+full_train_balanced_ss = ss.fit_transform(full_train_balanced)
 
 # Randomly shuffle the order of the arrays
-shuffle_idx = np.arange(len(data_balanced))
-np.random.shuffle(shuffle_idx)
-
-data_balanced = np.array(data_balanced)[shuffle_idx]
-labels_balanced = np.array(labels_balanced)[shuffle_idx]
-lengths_balanced = np.array(lengths_balanced)[shuffle_idx]
+# shuffle_idx = np.arange(len(data_balanced))
+# np.random.shuffle(shuffle_idx)
+#
+# data_balanced = np.array(data_balanced)[shuffle_idx]
+# labels_balanced = np.array(labels_balanced)[shuffle_idx]
+# lengths_balanced = np.array(lengths_balanced)[shuffle_idx]
 
 np.savez_compressed('TrainData/train_data_new.npz', data=data, lengths=lengths, labels=labels_norm)
-np.savez_compressed('TrainData/train_data_balanced.npz', data=data_balanced, lengths=lengths_balanced, labels=labels_balanced)
+np.savez_compressed('TrainData/train_data_balanced.npz', data=data_balanced,
+                    lengths=lengths_balanced, labels=labels_balanced, stats=full_train_balanced_ss)
 
 
 
