@@ -1,11 +1,9 @@
-from Model.model_parser import load_net
 from Config.config_parser import load_config
 from Config.config_parser import get_data_config
 from Data.data_loader import get_data_loader
 from evaluation_handler import EvaluationHandler
 
-# from Model.model_conc import Net
-from Model.model_combined import Net
+from model import Net
 
 import torch
 import time
@@ -14,7 +12,6 @@ import numpy as np
 
 def main():
 
-    # net = load_net()
     net = Net()
     learning_rate, batch_size, num_epochs, eval_every, loss_f, acc_f, optimizer, seed, device = load_config(net.parameters())
     train_loader, val_loader = get_data_loader(*get_data_config())
@@ -62,8 +59,8 @@ def main():
         if epoch % eval_every == 0:
             eval_handler.evaluate(net)
 
-        if epoch % 500 == 0:
-            optimizer.__setattr__("lr", 0.7*learning_rate)
+        if epoch % 100 == 0:
+            optimizer.__setattr__("lr", 0.6*learning_rate)
 
         eval_handler.print_logs()
 
