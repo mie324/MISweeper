@@ -5,7 +5,7 @@ from Data.data_loader import get_data_loader
 from evaluation_handler import EvaluationHandler
 
 # from Model.model_conc import Net
-from Model.model_simple import Net
+from Model.model_combined import Net
 
 import torch
 import time
@@ -32,20 +32,22 @@ def main():
 
         for data in train_loader:
 
-            inputs, labels= data
+            stats, time_series, labels, lengths = data
 
-            inputs = inputs.float().to(device) if type(inputs) != list else [inp.float().to(device) for inp in inputs]
+            time_series = time_series.float().to(device) if type(time_series) != list else [inp.float().to(device) for inp in time_series]
+            stats = stats.float().to(device)
             labels = labels.float().to(device)
-            # lengths = lengths.int().to(device)
-            #
-            # argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
-            # lengths = lengths[argsort_map]
-            # labels = labels[argsort_map]
-            # inputs = inputs[argsort_map]
+            lengths = lengths.int().to(device)
+
+            argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+            lengths = lengths[argsort_map]
+            labels = labels[argsort_map]
+            time_series = time_series[argsort_map]
+            stats = stats[argsort_map]
 
             optimizer.zero_grad()
 
-            outputs = net(inputs).float().to(device)
+            outputs = net(stats, time_series, lengths).float().to(device)
 
             loss = loss_f(outputs, labels.long().to(device))
 

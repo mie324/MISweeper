@@ -6,6 +6,7 @@ from sklearn.metrics import confusion_matrix
 from Results.results_parser import plot_confusion_matrix
 import os
 
+
 class EvaluationHandler:
 
     def __init__(self, loader, acc_f, loss_f, device):
@@ -27,20 +28,24 @@ class EvaluationHandler:
         loss = 0.0
         acc = 0.0
 
+        device = self.device
+
         for data in self.loader:
-            inputs, labels = data
 
-            inputs = inputs.float().to(self.device) if type(inputs) != list \
-                else [inp.float().to(self.device) for inp in inputs]
-            labels = labels.float().to(self.device)
-            # lengths = lengths.int().to(self.device)
+            stats, time_series, labels, lengths = data
 
-            # argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
-            # lengths = lengths[argsort_map]
-            # labels = labels[argsort_map]
-            # inputs = inputs[argsort_map]
+            time_series = time_series.float().to(device) if type(time_series) != list else [inp.float().to(device) for inp in time_series]
+            stats = stats.float().to(device)
+            labels = labels.float().to(device)
+            lengths = lengths.int().to(device)
 
-            outputs = net(inputs).float().to(self.device)
+            argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+            lengths = lengths[argsort_map]
+            labels = labels[argsort_map]
+            time_series = time_series[argsort_map]
+            stats = stats[argsort_map]
+
+            outputs = net(stats, time_series, lengths).float().to(self.device)
 
             acc += self.acc_f(labels, outputs)
             loss += self.loss_f(outputs, labels.long().to(self.device)).item()
@@ -64,42 +69,30 @@ class EvaluationHandler:
     def generate_confusion_matrix(self, net):
 
         predictions = np.array([])
-        l = np.array([])
+        true_labels = np.array([])
+
+        device = self.device
 
         for data in self.loader:
-            inputs, labels = data
+            stats, time_series, labels, lengths = data
 
-            inputs = inputs.float().to(self.device) if type(inputs) != list \
-                else [inp.float().to(self.device) for inp in inputs]
-            labels = labels.float().to(self.device)
-            # lengths = lengths.int().to(self.device)
+            time_series = time_series.float().to(device) if type(time_series) != list else [inp.float().to(device) for inp in time_series]
+            stats = stats.float().to(device)
+            labels = labels.float().to(device)
+            lengths = lengths.int().to(device)
 
-            # argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
-            # lengths = lengths[argsort_map]
-            # labels = labels[argsort_map]
-            # inputs = inputs[argsort_map]
+            argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+            lengths = lengths[argsort_map]
+            labels = labels[argsort_map]
+            time_series = time_series[argsort_map]
+            stats = stats[argsort_map]
 
-            outputs = net(inputs).float().to(self.device)
+            outputs = net(stats, time_series, lengths).float().to(self.device)
 
             predictions = np.append(predictions, outputs.argmax(dim=1).cpu().detach().numpy())
-            l = np.append(labels, l)
+            true_labels = np.append(labels, true_labels)
 
-        # inputs, labels, lengths = self.loader.dataset.get_dataset()
-
-        # inputs = torch.FloatTensor(inputs).to(self.device)
-        # lengths = torch.LongTensor(lengths).to(self.device)
-
-        # Sort everything so lengths is in decreasing orders
-        # argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
-        # lengths = lengths[argsort_map]
-        # labels = labels[argsort_map]
-        # inputs = inputs[argsort_map]
-
-        # predictions = np.array(predictions)
-
-        # predictions = net(inputs, lengths).float().to(self.device).argmax(dim=1).cpu().numpy()
-
-        cm = confusion_matrix(l, predictions)
+        cm = confusion_matrix(true_labels, predictions)
         plot_confusion_matrix(os.path.join(self.results_handler.dst_path, 'confusion_matrix.png'), cm, normalize=True)
 
 

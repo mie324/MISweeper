@@ -15,9 +15,9 @@
       "momentum": 0.9
     }
   },
-  "data_name": "simple",
+  "data_name": "combined",
   "one_hot": false,
   "seed": 69,
   "split": 0.1,
-  "note": "simple_rel"
+  "note": "combined"
 }
