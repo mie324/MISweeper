@@ -4,17 +4,13 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 from Data.dataset import LSSTDataset
 from torch.utils.data import DataLoader
-from Model.model_combined import Net
+from model import Net
 from Config.config_parser import *
 
 device = get_device()  
 
 
 def normalize_df(df):
-    # if 'object_id' not in df.keys():
-    #     print('hi')
-    # _obj_id = df['object_id'].unique()[0]
-
     flux_mean = df['flux'].mean()
     flux_std = df['flux'].std()
     flux_err_mean = df['flux_err'].mean()
