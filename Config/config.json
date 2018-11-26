@@ -14,9 +14,9 @@
     "kwargs": {
     }
   },
-  "data_name": "combined_balanced",
+  "data_name": "combined",
   "one_hot": false,
   "seed": 69,
   "split": 0.1,
-  "note": "combined_balanced"
+  "note": "combined"
 }
