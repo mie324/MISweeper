@@ -7,7 +7,7 @@ class Net(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.rnn1 = nn.LSTM(input_size=8, hidden_size=100, batch_first=True, num_layers=1, dropout=0.1)
+        self.rnn1 = nn.LSTM(input_size=8, hidden_size=100, batch_first=True, num_layers=2, dropout=0.1)
         self.bn0 = nn.BatchNorm1d(100)
 
         self.lin1 = nn.Linear(in_features=31+100, out_features=512)

@@ -39,15 +39,14 @@ def channel_onehot(ch):
     res[ch] = 1
     return res
 
-chunks = 2000
-# chunks = 5000000 # How many lines to read at a time
+chunks = 1000000 # How many lines to read at a time
+
 
 # Load the metadata
 meta_test = pd.read_csv('Data/RawData/test_set_metadata.csv')
 
-all_preds = None # Store the predictions
-
 for df_idx, df in enumerate(pd.read_csv('Data/RawData/test_set.csv', chunksize=chunks, iterator=True)):
+    print('Chunk index %d, test set index %d' % (df_idx, (df_idx+1)*chunks))
     # Apply the same processing to the test set as the training set
     df['flux_ratio_sq'] = np.power(df['flux'] / df['flux_err'], 2.0)
     df['flux_by_flux_ratio_sq'] = df['flux'] * df['flux_ratio_sq']
@@ -138,6 +137,8 @@ for df_idx, df in enumerate(pd.read_csv('Data/RawData/test_set.csv', chunksize=c
     net = Net().to(device)
     net.load_state_dict(torch.load('Results/Graham-PC-Ubuntu/combined_balanced_1/model.pt'))
 
+    all_preds = None  # Store the predictions
+
     for pred_data in test_loader:
         stats, time_series, lengths = pred_data
 
@@ -159,12 +160,18 @@ for df_idx, df in enumerate(pd.read_csv('Data/RawData/test_set.csv', chunksize=c
         else:
             all_preds = np.vstack((all_preds, predictions))
 
-final_predictions = pd.DataFrame(all_preds)
-final_predictions.insert(loc=0, column='object_id', value=test_stats['object_id'])
-final_predictions.insert(loc=-1, column='class_99', value=0)
-final_predictions.columns = submission_columns
+    # Save the predictions
+    final_predictions = pd.DataFrame(all_preds)
+    final_predictions.insert(loc=0, column='object_id', value=test_stats.index.values)
+    final_predictions.insert(loc=len(final_predictions.columns), column='class_99', value=0)
+    final_predictions.columns = submission_columns
 
-final_predictions.to_csv('Data/submission.csv')
+    if df_idx == 0:
+        final_predictions.to_csv('Results/predictions.csv', header=True, mode='w', index=False)
+    else:
+        final_predictions.to_csv('Results/predictions.csv', header=False, mode='a', index=False)
+
+    del final_predictions, test_stats
 
 
 

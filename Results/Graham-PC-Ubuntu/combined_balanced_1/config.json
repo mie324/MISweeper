@@ -1,6 +1,5 @@
 {
-  "device": "cuda",
-  "batch_size": 1024,
+  "batch_size": 2048,
   "learning_rate": 0.01,
   "num_epochs": 50000,
   "eval_every": 1,
@@ -15,9 +14,9 @@
     "kwargs": {
     }
   },
-  "data_name": "combined",
+  "data_name": "combined_balanced",
   "one_hot": false,
   "seed": 69,
   "split": 0.1,
-  "note": "combined"
+  "note": "combined_balanced"
 }
