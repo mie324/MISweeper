@@ -1,0 +1,22 @@
+{
+  "batch_size": 1024,
+  "learning_rate": 0.01,
+  "num_epochs": 50000,
+  "eval_every": 1,
+  "loss": {
+    "name": "ce",
+    "weight": "Config/rel_weights.npy",
+    "kwargs": {
+    }
+  },
+  "optimizer": {
+    "name": "adam",
+    "kwargs": {
+    }
+  },
+  "data_name": "combined",
+  "one_hot": false,
+  "seed": 69,
+  "split": 0.1,
+  "note": "combined"
+}
