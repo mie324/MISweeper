@@ -49,13 +49,15 @@ for idx, pred_data in enumerate(test_loader):
     stats = stats.float().to(device)
     lengths = lengths.int().to(device)
 
-    argsort_map = torch.from_numpy(np.flip(np.argsort(lengths).numpy(), 0).copy())
+    argsort_map = torch.from_numpy(np.flip(np.argsort(lengths, kind="mergesort").numpy(), 0).copy())
     lengths = lengths[argsort_map]
     time_series = time_series[argsort_map]
     stats = stats[argsort_map]
 
     predictions = net(stats, time_series, lengths).float().to(device)
-    predictions = predictions[argsort_map].cpu().detach().numpy()
+
+    rev_map = torch.from_numpy(np.argsort(argsort_map.numpy(), kind="mergesort").copy())
+    predictions = predictions[rev_map].cpu().detach().numpy()
 
     if all_preds is None:
         all_preds = predictions
