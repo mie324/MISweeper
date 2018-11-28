@@ -49,6 +49,22 @@ def load_data(data_name):
     return stats, time_series, labels, lengths
 
 
+def load_balanced():
+    train = np.load('Data/TrainData/train_data_balanced.npz')
+    train_ts = train['data']
+    train_lengths = train['lengths']
+    train_labels = train['labels']
+    train_stats = train['stats']
+
+    val = np.load('Data/TrainData/val_data_balanced.npz')
+    val_ts = val['data']
+    val_lengths = val['lengths']
+    val_labels = val['labels']
+    val_stats = val['stats']
+
+    return train_stats, train_ts, train_labels, train_lengths, val_stats, val_ts, val_labels, val_lengths
+
+
 def normalize(labels, one_hot):
     classes = [6, 15, 16, 42, 52, 53, 62, 64, 65, 67, 88, 90, 92, 95]
     if one_hot:
@@ -61,11 +77,14 @@ def normalize(labels, one_hot):
 
 
 def get_data_loader(batch_size, spl, s, data_name, one_hot):
-    stats, time_series, labels, lengths = load_data(data_name)
-    labels = normalize(labels, one_hot)
+    # stats, time_series, labels, lengths = load_data(data_name)
+    train_stats, train_ts, train_labels, train_lengths, val_stats, val_ts, val_labels, val_lengths = load_balanced()
+    train_labels = normalize(train_labels, one_hot)
+    val_labels = normalize(val_labels, one_hot)
 
-    train_stats, val_stats, train_ts, val_ts, train_labels, val_labels, train_lengths, val_lengths = \
-        train_test_split(stats, time_series, labels, lengths, test_size=spl, random_state=s)
+    #
+    # train_stats, val_stats, train_ts, val_ts, train_labels, val_labels, train_lengths, val_lengths = \
+    #     train_test_split(stats, time_series, labels, lengths, test_size=spl, random_state=s)
 
     train_dataset = LSSTDataset(train_stats, train_ts, train_labels, train_lengths)
     val_dataset = LSSTDataset(val_stats, val_ts, val_labels, val_lengths)
