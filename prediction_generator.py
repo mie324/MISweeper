@@ -62,11 +62,17 @@ for idx, pred_data in enumerate(test_loader):
     else:
         all_preds = np.vstack((all_preds, predictions))
 
+# Compute the probability in being class 99 as the probability as being in none of the others
+# From https://www.kaggle.com/meaninglesslives/simple-neural-net-for-time-series-classification
+class_99 = np.ones(all_preds.shape[0])
+for i in range(all_preds.shape[1]):
+    class_99 *= (1 - all_preds[:, i])
+
 print('Saving predictions')
 # Save the predictions
 final_predictions = pd.DataFrame(all_preds)
 final_predictions.insert(loc=0, column='object_id', value=object_ids)
-final_predictions.insert(loc=len(final_predictions.columns), column='class_99', value=0)
+final_predictions.insert(loc=len(final_predictions.columns), column='class_99', value=class_99)
 final_predictions.columns = submission_columns
 
 final_predictions.to_csv('Results/predictions.csv', header=True, mode='w', index=False)
