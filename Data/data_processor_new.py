@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 
 # Import the training set
 train = pd.read_csv('RawData/training_set.csv').groupby('object_id')
@@ -31,14 +32,15 @@ labels = train_stats['target']
 
 
 def normalize_df(df):
-    obj_id = df['object_id'].unique()[0]
+    _obj_id = df['object_id'].unique()[0]
 
     # Start time from zero
-    df['mjd'] = df['mjd'] - train_stats.loc[obj_id]['mjd_min']
+    df['mjd'] = df['mjd'] - train_stats.loc[_obj_id]['mjd_min']
 
     # Normalize flux and flux error
-    df['flux'] = (df['flux'] - train_stats.loc[obj_id]['flux_mean'])/train_stats.loc[obj_id]['flux_std']
-    df['flux_err'] = (df['flux_err'] - train_stats.loc[obj_id]['flux_err_mean']) / train_stats.loc[obj_id]['flux_err_std']
+    df['flux'] = (df['flux'] - train_stats.loc[_obj_id]['flux_mean']) / train_stats.loc[_obj_id]['flux_std']
+    df['flux_err'] = (df['flux_err'] - train_stats.loc[_obj_id]['flux_err_mean']) / train_stats.loc[_obj_id][
+        'flux_err_std']
 
     return df
 
@@ -86,70 +88,79 @@ for idx, (obj_id, df) in enumerate(train_norm):
     data[idx] = obj_data
     lengths[idx] = series_length
 
-# Oversample and undersample the data to balance class occurrences
-mean_samples = train_meta['target'].value_counts().mean() # How many of each class we want
-sampling_freq = mean_samples / train_meta['target'].value_counts()
+# Pull in the preprocessed stats
+stats_preprocessed = pd.read_csv('RawData/train_stats.csv', index_col=0)
 
-# Sampling_freq tells us how often we need to sample objects of a given class
-# If it is more than one, we are oversampling (i.e. 2 means take everything twice)
-# If it is less than zero, undersample (i.e. 1/2 means sample every other)
 
-# Split the data by class again
-objects_by_class = {i: [] for i in sampling_freq.keys()}
-lengths_by_class = {i: [] for i in sampling_freq.keys()}
-object_ids_by_class = {i: [] for i in sampling_freq.keys()}
+def balance(name, _meta, _labels, _data, _lengths, _stats, _obj_ids):
+    # Oversample and undersample the data to balance class occurrences
+    mean_samples = _meta['target'].value_counts().mean()  # How many of each class we want
+    sampling_freq = mean_samples / _meta['target'].value_counts()
 
-for idx, label in enumerate(labels_norm):
-    objects_by_class[label].append(data[idx, :, :])
-    lengths_by_class[label].append(lengths[idx])
-    object_ids_by_class[label].append(object_ids[idx])
+    # Sampling_freq tells us how often we need to sample objects of a given class
+    # If it is more than one, we are oversampling (i.e. 2 means take everything twice)
+    # If it is less than zero, undersample (i.e. 1/2 means sample every other)
 
-# Do the oversampling
-data_balanced = []
-labels_balanced = []
-lengths_balanced = []
-sampling_rates = {i: 0 for i in train_meta['object_id'].values}
-samples_balanced = []
+    # Split the data by class again
+    objects_by_class = {i: [] for i in sampling_freq.keys()}
+    lengths_by_class = {i: [] for i in sampling_freq.keys()}
+    object_ids_by_class = {i: [] for i in sampling_freq.keys()}
 
-for label in objects_by_class.keys():
-    if sampling_freq[label] < 1: # Undersampling case
-        step = int(round(1/sampling_freq[label]))
-        for i in range(0, len(objects_by_class[label]), step):
-            data_balanced.append(objects_by_class[label][i])
-            labels_balanced.append(label)
-            lengths_balanced.append(lengths_by_class[label][i])
-            sampling_rates[object_ids_by_class[label][i]] += 1
-            samples_balanced.append(object_ids_by_class[label][i])
-    else: # Oversampling case
-        oversample_rate = int(round(sampling_freq[label]))
-        for i in range(len(objects_by_class[label])):
-            for j in range(oversample_rate):
+    for _idx, label in enumerate(_labels):
+        objects_by_class[label].append(_data[_idx, :, :])
+        lengths_by_class[label].append(_lengths[_idx])
+        object_ids_by_class[label].append(_obj_ids[_idx])
+
+    # Do the oversampling
+    data_balanced = []
+    labels_balanced = []
+    lengths_balanced = []
+    sampling_rates = {i: 0 for i in _meta['object_id'].values}
+    samples_balanced = []
+
+    for label in objects_by_class.keys():
+        if sampling_freq[label] < 1:  # Undersampling case
+            step = int(round(1 / sampling_freq[label]))
+            for i in range(0, len(objects_by_class[label]), step):
                 data_balanced.append(objects_by_class[label][i])
                 labels_balanced.append(label)
                 lengths_balanced.append(lengths_by_class[label][i])
                 sampling_rates[object_ids_by_class[label][i]] += 1
                 samples_balanced.append(object_ids_by_class[label][i])
+        else:  # Oversampling case
+            oversample_rate = int(round(sampling_freq[label]))
+            for i in range(len(objects_by_class[label])):
+                for j in range(oversample_rate):
+                    data_balanced.append(objects_by_class[label][i])
+                    labels_balanced.append(label)
+                    lengths_balanced.append(lengths_by_class[label][i])
+                    sampling_rates[object_ids_by_class[label][i]] += 1
+                    samples_balanced.append(object_ids_by_class[label][i])
 
-# Pull in the preprocessed stats
-full_train = pd.read_csv('RawData/train_stats.csv', index_col=0)
+    # Apply the same over/under sampling
+    _stats_balanced = _stats.loc[samples_balanced]
 
-# Apply the same over/under sampling
-full_train_balanced = full_train.loc[samples_balanced]
+    ss = StandardScaler()
+    _stats_balanced_ss = ss.fit_transform(_stats_balanced)
 
-ss = StandardScaler()
-full_train_balanced_ss = ss.fit_transform(full_train_balanced)
+    # Randomly shuffle the order of the arrays
+    # shuffle_idx = np.arange(len(data_balanced))
+    # np.random.shuffle(shuffle_idx)
+    #
+    # data_balanced = np.array(data_balanced)[shuffle_idx]
+    # labels_balanced = np.array(labels_balanced)[shuffle_idx]
+    # lengths_balanced = np.array(lengths_balanced)[shuffle_idx]
 
-# Randomly shuffle the order of the arrays
-# shuffle_idx = np.arange(len(data_balanced))
-# np.random.shuffle(shuffle_idx)
-#
-# data_balanced = np.array(data_balanced)[shuffle_idx]
-# labels_balanced = np.array(labels_balanced)[shuffle_idx]
-# lengths_balanced = np.array(lengths_balanced)[shuffle_idx]
-
-np.savez_compressed('TrainData/train_data_new.npz', data=data, lengths=lengths, labels=labels_norm)
-np.savez_compressed('TrainData/train_data_balanced.npz', data=data_balanced,
-                    lengths=lengths_balanced, labels=labels_balanced, stats=full_train_balanced_ss)
+    # Save
+    np.savez_compressed('TrainData/' + name, data=data_balanced, lengths=lengths_balanced, labels=labels_balanced,
+                        stats=_stats_balanced_ss)
 
 
+# Before balancing, create training and validation sets
+train_data, val_data, train_labels, val_labels, train_lengths, val_lengths, train_stats, val_stats, \
+    train_meta_split, val_meta_split, train_objs, val_objs = train_test_split(
+        data, labels_norm, lengths, stats_preprocessed, train_meta, object_ids, test_size=0.1, random_state=69
+    )
 
+balance('train_data_balanced.npz', train_meta_split, train_labels, train_data, train_lengths, train_stats, train_objs)
+balance('val_data_balanced.npz', val_meta_split, val_labels, val_data, val_lengths, val_stats, val_objs)
