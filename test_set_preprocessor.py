@@ -40,10 +40,14 @@ def channel_onehot(ch):
     return res
 
 # Load the metadata
+print('Loading metadata...')
 meta_test = pd.read_csv('Data/RawData/test_set_metadata.csv')
-
+print('Done.')
+print('Loading test set...')
 df = pd.read_csv('Data/RawData/test_set.csv', engine='python')
-print('Chunk index %d, test set index %d' % (df_idx, (df_idx+1)*chunks))
+print('Done.')
+
+print('Preprocessing...')
 # Apply the same processing to the test set as the training set
 df['flux_ratio_sq'] = np.power(df['flux'] / df['flux_err'], 2.0)
 df['flux_by_flux_ratio_sq'] = df['flux'] * df['flux_ratio_sq']
@@ -60,6 +64,7 @@ aggs = {
 
 test = df.groupby('object_id')
 
+print('Aggregating...')
 agg_test = test.agg(aggs)
 
 new_columns = [k + '_' + agg for k in aggs.keys() for agg in aggs[k]]
@@ -70,9 +75,11 @@ agg_test['flux_diff'] = agg_test['flux_max'] - agg_test['flux_min']
 agg_test['flux_dif2'] = (agg_test['flux_max'] - agg_test['flux_min']) / agg_test['flux_mean']
 agg_test['flux_w_mean'] = agg_test['flux_by_flux_ratio_sq_sum'] / agg_test['flux_ratio_sq_sum']
 agg_test['flux_dif3'] = (agg_test['flux_max'] - agg_test['flux_min']) / agg_test['flux_w_mean']
+print('Done.')
 
 del agg_test['mjd_max'], agg_test['mjd_min']
 
+print('Merging test stats and metadata...')
 # Merge with metadata
 test_stats = agg_test.reset_index().merge(
     right=meta_test,
@@ -86,9 +93,10 @@ del test_stats['distmod'], test_stats['hostgal_specz'], test_stats['ra'], test_s
 del test_stats['gal_l'], test_stats['gal_b'], test_stats['ddf'], test_stats['mjd_size']
 test_mean = test_stats.mean(axis=0)
 test_stats.fillna(test_mean, inplace=True)
+print('Done.')
 
 # Apply normalization and such to the time series data
-
+print('Normalizing...')
 dims = (test_stats.shape[0], test_stats['size'].max(), 8)
 data = np.empty(dims)
 
@@ -129,7 +137,7 @@ for idx, (obj_id, df_norm) in enumerate(test_norm):
 # Normalize the stats data
 ss = StandardScaler()
 full_test_ss = ss.fit_transform(test_stats.astype(float))
-
+print('Done.')
 # Save everything
 np.savez_compressed('Data/RawData/test_set.npz', data=data, stats=full_test_ss, lengths=lengths)
 
