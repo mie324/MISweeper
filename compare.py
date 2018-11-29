@@ -4,16 +4,15 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 import itertools
 
-training_set = np.load('Data/RawData/training_set.npz')
-object_ids = training_set['object_ids']
-df = pd.read_csv('Data/RawData/training_set_metadata.csv')
+labels = pd.read_csv('Data/RawData/training_set_metadata.csv')['target']
+
 predictions = pd.read_csv('Results/predictions.csv').set_index('object_id')
 pred_argmax = predictions.values[:, :-1].argmax(axis=1)
 
 class_map = np.array([6, 15, 16, 42, 52, 53, 62, 64, 65, 67, 88, 90, 92, 95])
 pred_good = class_map[pred_argmax]
 
-cm = confusion_matrix(df['target'], pred_good)
+cm = confusion_matrix(labels, pred_good)
 
 # Compare with labels
 def plot_confusion_matrix(path, cm,

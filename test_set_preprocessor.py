@@ -135,11 +135,26 @@ for idx, (obj_id, df_norm) in enumerate(test_norm):
     data[idx] = obj_data
     lengths[idx] = series_length
 
+
 # Normalize the stats data
 ss = StandardScaler()
 full_test_ss = ss.fit_transform(test_stats.astype(float))
+
+
+# TODO NEED TO FIX THIS
+# rearrange = [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+# full_test_ss = full_test_ss[:, rearrange]
+
 print('Done.')
 # Save everything
 np.savez_compressed('Data/RawData/training_set.npz', data=data, stats=full_test_ss, lengths=lengths, object_ids=meta_test['object_id'])
 
 
+# Compare with pre-processing training:
+
+
+actual_train_data_npz = np.load("Data/TrainData/train_data_new.npz")
+actual_train_data_ts = actual_train_data_npz['data']
+actual_train_data_lengths = actual_train_data_npz['lengths']
+actual_train_data_ids = np.load("Data/TrainData/stats_labels2.npy").transpose()
+actual_train_data_stats = np.load("Data/TrainData/stats_data2.npy")

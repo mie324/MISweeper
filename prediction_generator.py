@@ -23,6 +23,12 @@ dataset = np.load('Data/RawData/%s_set.npz' % filename)
 data = dataset['data']
 lengths = dataset['lengths']
 full_test_ss = dataset['stats']
+
+# TODO REMOVE THIS AFTER FIXING PREPROCESSOR
+
+rearrange = [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29]
+full_test_ss = full_test_ss[:, rearrange]
+
 print('Done.')
 
 # Create the data loader
@@ -32,7 +38,7 @@ test_loader = DataLoader(test_dataset, batch_size=get_batch_size())
 print('Done.')
 
 net = Net().to(device)
-net.load_state_dict(torch.load('Results/Graham-PC-Ubuntu/combined_balanced_1/model.pt'))
+net.load_state_dict(torch.load('Results/combined_1/model.pt'))
 
 print('Generating predictions...')
 all_preds = None  # Store the predictions
