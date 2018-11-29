@@ -7,6 +7,8 @@ from model import Net
 from Config.config_parser import *
 import time
 
+filename = 'training'
+
 start_time = time.time()
 
 device = get_device()
@@ -17,7 +19,7 @@ submission_columns = list(sample_sub.columns)
 del sample_sub
 
 print('Loading the dataset...')
-dataset = np.load('Data/RawData/test_set.npz')
+dataset = np.load('Data/RawData/%s_set.npz' % filename)
 data = dataset['data']
 lengths = dataset['lengths']
 full_test_ss = dataset['stats']

@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 from Config.config_parser import *
 
+filename = 'training'
+
 device = get_device()  
 
 import warnings
@@ -37,10 +39,10 @@ def channel_onehot(ch):
 
 # Load the metadata
 print('Loading metadata...')
-meta_test = pd.read_csv('Data/RawData/test_set_metadata.csv')
+meta_test = pd.read_csv('Data/RawData/%s_set_metadata.csv' % filename)
 print('Done.')
 print('Loading test set...')
-df = pd.read_csv('Data/RawData/test_set.csv', engine='python')
+df = pd.read_csv('Data/RawData/%s_set.csv' % filename, engine='python')
 print('Done.')
 
 print('Preprocessing...')
@@ -87,8 +89,8 @@ test_stats['size'] = test_stats['mjd_size']
 
 del test_stats['distmod'], test_stats['hostgal_specz'], test_stats['ra'], test_stats['decl']
 del test_stats['gal_l'], test_stats['gal_b'], test_stats['ddf'], test_stats['mjd_size']
-if 'label' in test_stats.columns:
-    del test_stats['label']
+if 'target' in test_stats.columns:
+    del test_stats['target']
 
 test_mean = test_stats.mean(axis=0)
 test_stats.fillna(test_mean, inplace=True)
@@ -138,6 +140,6 @@ ss = StandardScaler()
 full_test_ss = ss.fit_transform(test_stats.astype(float))
 print('Done.')
 # Save everything
-np.savez_compressed('Data/RawData/test_set.npz', data=data, stats=full_test_ss, lengths=lengths, object_ids=meta_test['object_id'])
+np.savez_compressed('Data/RawData/training_set.npz', data=data, stats=full_test_ss, lengths=lengths, object_ids=meta_test['object_id'])
 
 
