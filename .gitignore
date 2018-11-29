@@ -8,6 +8,10 @@ test_set_metadata.csv
 test_set_sample.csv
 data.npy
 
+test_set.npz
+sample_submission.csv
+
 # Training Folders
 Graham-XPS-Ubuntu
 daniil-XPS-15-9550
+daniil-ubuntu
