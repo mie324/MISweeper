@@ -37,7 +37,7 @@ all_preds = None  # Store the predictions
 
 test_loader_len = len(test_loader)
 
-object_ids = np.load('Data/RawData/object_ids.npy')
+object_ids = dataset['object_ids']
 
 for idx, pred_data in enumerate(test_loader):
     if idx % 10 == 0:

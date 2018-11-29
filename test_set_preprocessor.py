@@ -87,6 +87,9 @@ test_stats['size'] = test_stats['mjd_size']
 
 del test_stats['distmod'], test_stats['hostgal_specz'], test_stats['ra'], test_stats['decl']
 del test_stats['gal_l'], test_stats['gal_b'], test_stats['ddf'], test_stats['mjd_size']
+if 'label' in test_stats.columns:
+    del test_stats['label']
+
 test_mean = test_stats.mean(axis=0)
 test_stats.fillna(test_mean, inplace=True)
 print('Done.')
@@ -135,6 +138,6 @@ ss = StandardScaler()
 full_test_ss = ss.fit_transform(test_stats.astype(float))
 print('Done.')
 # Save everything
-np.savez_compressed('Data/RawData/test_set.npz', data=data, stats=full_test_ss, lengths=lengths)
+np.savez_compressed('Data/RawData/test_set.npz', data=data, stats=full_test_ss, lengths=lengths, object_ids=meta_test['object_id'])
 
 
