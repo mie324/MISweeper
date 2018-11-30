@@ -29,6 +29,8 @@ class EvaluationHandler:
         loss = 0.0
         acc = 0.0
 
+        net.eval()
+
         device = self.device
 
         for data in self.loader:
@@ -56,6 +58,8 @@ class EvaluationHandler:
 
         self.logs += (" | Val. Acc.: {}, Val. Loss: {}".format(self.val_acc[-1], self.val_loss[-1]))
         self.check_for_saving(net)
+
+        net.train()
 
     def check_for_saving(self, net):
         if self.val_acc[-1] > self.results_handler.get_best_accuracy():

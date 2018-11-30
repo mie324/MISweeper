@@ -40,6 +40,8 @@ print('Done.')
 net = Net().to(device)
 net.load_state_dict(torch.load('Results/combined_1/model.pt'))
 
+net.eval()
+
 print('Generating predictions...')
 all_preds = None  # Store the predictions
 
