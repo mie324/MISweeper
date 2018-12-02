@@ -5,10 +5,10 @@ from sklearn.preprocessing import StandardScaler
 import warnings
 warnings.filterwarnings("ignore")
 
-filename = 'test_sample'
+filename = 'test'
 
+sample_sub = pd.read_csv('../Data/RawData/sample_submission.csv')
 
-sample_sub = pd.read_csv('Data/sample_submission.csv')
 class_names = list(sample_sub.columns[1:-1])
 submission_columns = list(sample_sub.columns)
 del sample_sub
@@ -154,6 +154,3 @@ np.savez_compressed('Data/%s_set_processed.npz' % filename, **args)
 
 # np.savez_compressed('Data/%s_set_processed.npz' % filename, ts=data, stats=full_test_ss,
 #                     lengths=lengths, object_ids=object_ids, labels=labels.values)
-
-
-

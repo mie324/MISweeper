@@ -1,7 +1,7 @@
 from model import Net
-from Simple.data_loader import get_train_loaders
-from Simple.data_loader import get_test_loader
-from Simple.utils import *
+from data_loader import get_train_loaders
+from data_loader import get_test_loader
+from utils import *
 
 import torch
 import torch.optim as optim
@@ -13,7 +13,7 @@ from sklearn.metrics import confusion_matrix
 import warnings
 warnings.filterwarnings("ignore")
 
-device = torch.device("cpu")
+device = torch.device("cuda")
 empty_net = Net().to(device)
 
 learning_rate = 0.001
@@ -48,6 +48,13 @@ def unsort_data(arg_map, predictions, obj_ids, labels=None):
 
 
 def make_predictions(net, lengths, time_series, stats, obj_ids, labels=None):
+
+    stats = torch.Tensor(stats).float().to(device)
+    ts = torch.Tensor(time_series).float().to(device)
+    lengths = torch.Tensor(lengths).int().to(device)
+    labels = torch.Tensor(labels).int().to(device) if labels is not None else None
+    object_ids = torch.Tensor(obj_ids).int().to(device)
+
     arg_map, lengths, time_series, stats, obj_ids, labels = sort_data(lengths, time_series, stats, obj_ids, labels)
 
     outputs = net(stats, time_series, lengths).float().to(device)
@@ -57,6 +64,7 @@ def make_predictions(net, lengths, time_series, stats, obj_ids, labels=None):
 
 
 def generate_predictions(net):
+    net.eval()
     all_preds = None
     all_obj_ids = None
     start_time = time.time()
@@ -150,7 +158,7 @@ def train(net):
 if __name__ == '__main__':
 
     train(empty_net)
-
+    #
     # loaded_net = Net().to(device)
     # loaded_net.load_state_dict(torch.load('model.pt'))
     # loaded_net.eval()
