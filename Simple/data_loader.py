@@ -1,4 +1,4 @@
-from Simple.dataset import LSSTDataset
+from dataset import LSSTDataset
 from torch.utils.data import DataLoader
 from sklearn.model_selection import train_test_split
 
@@ -24,7 +24,7 @@ def load_test_data():
 
     print("Loading test_set_processed.npz")
 
-    data = np.load('Data/training_set_processed.npz')
+    data = np.load('Data/test_set_processed.npz')
 
     time_series = data['ts']
     stats = data['stats']

@@ -1,7 +1,7 @@
 from model import Net
-from Simple.data_loader import get_train_loaders
-from Simple.data_loader import get_test_loader
-from Simple.utils import *
+from data_loader import get_train_loaders
+from data_loader import get_test_loader
+from utils import *
 
 import torch
 import torch.optim as optim
@@ -13,7 +13,7 @@ from sklearn.metrics import confusion_matrix
 import warnings
 warnings.filterwarnings("ignore")
 
-device = torch.device("cpu")
+device = torch.device("cuda")
 empty_net = Net().to(device)
 
 learning_rate = 0.01
@@ -56,6 +56,7 @@ def make_predictions(net, lengths, time_series, stats, obj_ids, labels=None):
 
 
 def generate_predictions(net):
+    net.eval()
     all_preds = None
     all_obj_ids = None
     start_time = time.time()
