@@ -2,10 +2,11 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
-filename = 'training'
-
 import warnings
 warnings.filterwarnings("ignore")
+
+filename = 'test_sample'
+
 
 sample_sub = pd.read_csv('Data/sample_submission.csv')
 class_names = list(sample_sub.columns[1:-1])
@@ -143,5 +144,16 @@ full_test_ss = ss.fit_transform(test_stats.astype(float))
 
 print('Done.')
 # Save everything
-np.savez_compressed('Data/%s_set_processed.npz' % filename, ts=data, stats=full_test_ss,
-                    lengths=lengths, object_ids=object_ids, labels=labels.values)
+
+args = {'ts': data, 'stats': full_test_ss, 'lengths': lengths, 'object_ids': object_ids}
+
+if filename == 'training':
+    args['labels'] = labels.values
+
+np.savez_compressed('Data/%s_set_processed.npz' % filename, **args)
+
+# np.savez_compressed('Data/%s_set_processed.npz' % filename, ts=data, stats=full_test_ss,
+#                     lengths=lengths, object_ids=object_ids, labels=labels.values)
+
+
+

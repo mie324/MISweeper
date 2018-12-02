@@ -16,14 +16,15 @@ warnings.filterwarnings("ignore")
 device = torch.device("cpu")
 empty_net = Net().to(device)
 
-learning_rate = 0.01
+learning_rate = 0.001
+decay_every = 500
+decay_factor = 0.5
 batch_size = 1024
 num_epochs = 50000
 seed = 69
 eval_every = 1
-split = 0.1
+split = 0.05
 
-optimizer = optim.Adam(params=empty_net.parameters(), lr=learning_rate)
 loss_f = nn.CrossEntropyLoss(weight=torch.Tensor(np.load("rel_weights.npy"))).to(device)
 acc_f = lambda l, o: torch.sum(l.float() == o.argmax(dim=1).float()).item()
 
@@ -113,6 +114,8 @@ def train(net):
     start_time = time.time()
     logs = ""
 
+    optimizer = optim.Adam(params=empty_net.parameters(), lr=learning_rate)
+
     for epoch in range(num_epochs):
         t_loss = 0.0
         t_acc = 0.0
@@ -133,6 +136,10 @@ def train(net):
             logs += evaluate(net, val_loader)
             net.train()
 
+        if epoch % decay_every:
+            optimizer = optim.Adam(params=net.parameters(), lr=decay_factor*learning_rate)
+
+
         print(logs)
         logs = ""
 
@@ -142,9 +149,9 @@ def train(net):
 
 if __name__ == '__main__':
 
-    # train(empty_net)
+    train(empty_net)
 
-    loaded_net = Net().to(device)
-    loaded_net.load_state_dict(torch.load('model.pt'))
-
-    generate_predictions(loaded_net)
+    # loaded_net = Net().to(device)
+    # loaded_net.load_state_dict(torch.load('model.pt'))
+    # loaded_net.eval()
+    # generate_predictions(loaded_net)

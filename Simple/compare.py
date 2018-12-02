@@ -56,4 +56,5 @@ def plot_confusion_matrix(path, cm,
     plt.tight_layout()
     plt.savefig(path)
 
+
 plot_confusion_matrix('train_cm.png', cm, normalize=True)

@@ -22,9 +22,9 @@ def load_train_data():
 
 def load_test_data():
 
-    print("Loading test_set_processed.npz")
+    print("Loading test_sample_set_processed.npz")
 
-    data = np.load('Data/training_set_processed.npz')
+    data = np.load('Data/test_set_processed.npz')
 
     time_series = data['ts']
     stats = data['stats']
